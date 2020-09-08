@@ -27,9 +27,7 @@ void setup() {
 }
 
 void loop() {
-  int32_t vref = readVref();
-  Serial.printf("Vref = %i", vref);
-  int32_t temperature = readTempSensor(vref);
-  Serial.printf("\tTemp(°C) = %i\n",temperature);
+  int32_t temperature = readTempSensor(readVref());
+  Serial.printf("Temp(°C) = %i\n",temperature);
   delay(1000);              
 }
