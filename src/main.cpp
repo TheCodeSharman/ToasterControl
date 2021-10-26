@@ -9,6 +9,12 @@
 #endif
 
 #define LED PC13
+#define K_TYPE_PROBE A1
+#define K_TYPE_PROBE_REF A2
+
+// Ambient temperate offset from internal chip sensor.
+// How accurate is this ??
+#define SELF_HEATING_OFFSET (20-25)
 
 static int32_t readVref()
 {
@@ -23,11 +29,19 @@ static int32_t readTempSensor(int32_t VRef)
 void setup() {
   pinMode(LED, OUTPUT);  
   digitalWrite(LED, LOW);
-  analogReadResolution(10);
+  analogReadResolution(12);
 }
 
 void loop() {
-  int32_t temperature = readTempSensor(readVref());
-  Serial.printf("Temp(°C) = %i\n",temperature);
-  delay(1000);              
+  digitalWrite(LED, LOW);
+  int32_t adc_v_ref = readVref();
+  int32_t temperature = readTempSensor(adc_v_ref);
+  int32_t k_probe_v_abs = analogRead(K_TYPE_PROBE);
+  int32_t k_probe_v_ref = analogRead(K_TYPE_PROBE_REF);
+  int32_t k_probe_v = k_probe_v_abs - k_probe_v_ref;
+  Serial.printf("Ambient Temp(°C) = %i\n",temperature + SELF_HEATING_OFFSET);
+  Serial.printf("K probe V = %i, (ref = %i, abs = %i, adc_v_ref = %i)\n",k_probe_v, k_probe_v_ref, k_probe_v_abs, adc_v_ref);
+  delay(500);   
+  digitalWrite(LED, HIGH);  
+  delay(500);         
 }
