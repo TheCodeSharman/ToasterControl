@@ -1,31 +1,59 @@
 #include <Arduino.h>
 #include "stm32yyxx_ll_adc.h"
 
-#if defined(STM32F4xx)
-  #define VREFINT   1210
-  #define ADC_RANGE 4096
-#else
-  #error Unsupported board: board needs to be STM32F4xx !
-#endif
-
 #define LED PC13
 #define K_TYPE_PROBE A2
 #define K_TYPE_PROBE_REF A1
 
-// Ambient temperate offset from internal chip sensor.
-// How accurate is this ??
-#define SELF_HEATING_OFFSET (20-25)
+// The Vref+ voltage supplied to the STM32 chip.
+const int32_t ADC_VREF = 3300; 
 
-static int32_t readVref()
-{
-  int32_t a_vref = analogRead(AVREF);
-  return (VREFINT * ADC_RANGE / a_vref); // ADC sample to mV
-} 
+// Ambient temperature offset from internal chip sensor.
+// This is assumed to be constant - needs to be found experimentally.
+const int32_t SELF_HEATING_OFFSET = 5;
 
-static int32_t readTempSensor(int32_t VRef)
+  // DC offset of ref pin on the instrument amplifier (units=mV).
+const int32_t GND_REF = 1650;
+
+// IN126 gain resister value (units=ohms).
+const int32_t GAIN_RESISTER = 645; 
+
+// Formula for gain from the IN126 datasheet.
+const int32_t GAIN = 5 + 80000/GAIN_RESISTER;
+
+/*
+  In order to make the circuit simpler, we read the STM32 chip temperature sensor
+  to get an estimate of the cold junction temperature. 
+  
+  For this to work we are assuming that there is a constant thermal resistance between 
+  the microproccesor and the cold end of the K type probe. 
+
+  Certainly not a precision measurement, but it seems accurate to a couple of degrees,
+  so saves us measuring the cold junction with a thermister.
+*/
+static int32_t readInternalTempSensor()
 {
-  int32_t a_temp = analogRead(ATEMP);
-  return (__LL_ADC_CALC_TEMPERATURE(VRef, a_temp, LL_ADC_RESOLUTION_12B));
+  return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, analogRead(ATEMP), LL_ADC_RESOLUTION_12B);
+}
+
+static int32_t readKTypeProbeSensor() {
+  /* 1. Calculate the measured voltage on the ADC and subtract the ref voltage
+        from this value to get the amplified voltage from the probe (units=mV). */
+  int32_t k_probe_amplified = __LL_ADC_CALC_DATA_TO_VOLTAGE(ADC_VREF,
+    analogRead(K_TYPE_PROBE),LL_ADC_RESOLUTION_12B) - GND_REF;
+
+  /* 2. Convert this value into µV value measured at the K type probe (before 
+        amplification). */
+  int32_t k_probe_uv = k_probe_amplified*1000/GAIN; 
+
+  /* 3. Using the linear polygon fit to the NIST K type probe data calculate
+        the temperature delta from the cold junction to the hot junction. */
+  int32_t k_probe_temp_delta = (k_probe_uv*24487)/1000 + 312;
+
+  /* 4. Using the internal temperature sensor, convert to an
+        absolute temperature. */
+  int32_t die_temp = readInternalTempSensor();
+  return k_probe_temp_delta/1000 + die_temp - SELF_HEATING_OFFSET;
 }
 
 void setup() {
@@ -36,31 +64,10 @@ void setup() {
 
 void loop() {
   digitalWrite(LED, LOW);
-  int32_t adc_v_ref = 3300; //readVref();
-  int32_t temperature = readTempSensor(adc_v_ref);
   
-  
-  int32_t k_probe_v_abs = analogRead(K_TYPE_PROBE);
-  int32_t k_probe_v_ref = 4096/2; //analogRead(K_TYPE_PROBE_REF);
-  int32_t k_probe_v = k_probe_v_abs - k_probe_v_ref;
+  Serial.printf("Ambient Temp(°C) = %i ",readInternalTempSensor() - SELF_HEATING_OFFSET);
+  Serial.printf("Probe Temp(°C) = %i\n", readKTypeProbeSensor());
 
-  
-  const int32_t gain = 5 + 80000/645;
-  // 24.487*Vprobe + 0.312
-  // adc_vref= volts on Vref+ pin = 3300
-  // => adc_vref/4096 is volts per unit on ADC 
-  float k_probe_mv = ((float)k_probe_v)*(adc_v_ref/1000)/4096;
-  k_probe_mv = k_probe_mv*1000/gain;
-  float k_probe_temp = k_probe_mv*24.487 + 0.312; 
-  float k_probe_temp_abs = k_probe_temp + temperature + SELF_HEATING_OFFSET;
-  
-  Serial.printf("\nAmbient Temp(°C) = %i\n",temperature + SELF_HEATING_OFFSET);
-
-  Serial.printf("K probe delta Temp(°C) =");
-  Serial.print(k_probe_temp);
-  Serial.printf(" V = %i, (ref = %i, abs = %i, adc_v_ref = %i)\n",k_probe_v, k_probe_v_ref, k_probe_v_abs, adc_v_ref);
-  Serial.print("Probe absolute Temp(°C) = ");
-  Serial.print( k_probe_temp_abs);
   delay(500);   
   digitalWrite(LED, HIGH);  
   delay(500);         
