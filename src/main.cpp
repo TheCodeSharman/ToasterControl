@@ -8,10 +8,6 @@
 // The Vref+ voltage supplied to the STM32 chip.
 const int32_t ADC_VREF = 3300; 
 
-// Ambient temperature offset from internal chip sensor.
-// This is assumed to be constant - needs to be found experimentally.
-const int32_t SELF_HEATING_OFFSET = 5;
-
 // DC offset of ref pin on the instrument amplifier (units=mV).
 const int32_t GND_REF = 1650;
 
@@ -53,7 +49,7 @@ static int32_t readKTypeProbeSensor() {
   /* 4. Using the internal temperature sensor, convert to an
         absolute temperature. */
   int32_t die_temp = readInternalTempSensor();
-  return k_probe_temp_delta/1000 + die_temp - SELF_HEATING_OFFSET;
+  return k_probe_temp_delta/1000 + die_temp;
 }
 
 void setup() {
@@ -65,7 +61,7 @@ void setup() {
 void loop() {
   digitalWrite(LED, LOW);
   
-  Serial.printf("Ambient Temp(°C) = %i ",readInternalTempSensor() - SELF_HEATING_OFFSET);
+  Serial.printf("Ambient Temp(°C) = %i ",readInternalTempSensor());
   Serial.printf("Probe Temp(°C) = %i\n", readKTypeProbeSensor());
 
   delay(500);   
