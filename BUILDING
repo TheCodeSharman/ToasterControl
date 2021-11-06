@@ -1,7 +1,7 @@
 In order to build using the HID boot loader, the hid-flash tool needs to be installed.
 
 1. git clone https://github.com/WeActTC/STM32_HID_Bootloader.git
-2. sudo apt install lib-usb-1.0.0-dev
+2. sudo apt install libusb-1.0.0-dev
 3. cd STM32_HID_Bootloader/cli
 4. make
 5. cp hid-flash ~/.platformio/penv

@@ -9,8 +9,8 @@
 #endif
 
 #define LED PC13
-#define K_TYPE_PROBE A1
-#define K_TYPE_PROBE_REF A2
+#define K_TYPE_PROBE A2
+#define K_TYPE_PROBE_REF A1
 
 // Ambient temperate offset from internal chip sensor.
 // How accurate is this ??
