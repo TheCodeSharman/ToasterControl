@@ -10,6 +10,8 @@ const int32_t ADC_VREF = 3300;
 
 // DC offset of ref pin on the instrument amplifier (units=mV).
 const int32_t GND_REF = 1650;
+const int32_t CAL1 = 19; // calibrate for voltage offset
+const int32_t CAL2 = 3200; // offset from reported ambient temperature
 
 // IN126 gain resister value (units=ohms).
 const int32_t GAIN_RESISTER = 645; 
@@ -36,7 +38,7 @@ static int32_t readKTypeProbeSensor() {
   /* 1. Calculate the measured voltage on the ADC and subtract the ref voltage
         from this value to get the amplified voltage from the probe (units=mV). */
   int32_t k_probe_amplified = __LL_ADC_CALC_DATA_TO_VOLTAGE(ADC_VREF,
-    analogRead(K_TYPE_PROBE),LL_ADC_RESOLUTION_12B) - GND_REF;
+    analogRead(K_TYPE_PROBE),LL_ADC_RESOLUTION_12B) - GND_REF + CAL1;
 
   /* 2. Convert this value into µV value measured at the K type probe (before 
         amplification). */
@@ -44,7 +46,7 @@ static int32_t readKTypeProbeSensor() {
 
   /* 3. Using the linear polygon fit to the NIST K type probe data calculate
         the temperature delta from the cold junction to the hot junction. */
-  int32_t k_probe_temp_delta = (k_probe_uv*24487)/1000 + 312;
+  int32_t k_probe_temp_delta = (k_probe_uv*24487)/1000 + 312 - CAL2;
 
   /* 4. Using the internal temperature sensor, convert to an
         absolute temperature. */
@@ -61,7 +63,6 @@ void setup() {
 void loop() {
   digitalWrite(LED, LOW);
   
-  Serial.printf("Ambient Temp(°C) = %i ",readInternalTempSensor());
   Serial.printf("Probe Temp(°C) = %i\n", readKTypeProbeSensor());
 
   delay(500);   
