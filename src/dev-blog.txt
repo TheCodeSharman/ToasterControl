@@ -83,7 +83,7 @@ Fixes
    We can then remove the need to measure Vref, since it will also be GND. By changing the gain we can increase
    the range over of the measured voltage over the 0 to 300 degrees range.
 
-3. Measure the cold junction temperature with a thermister
+3. Measure the cold junction temperature with a thermister - this should get an much more precise value for Tcold end.
 
 
 
