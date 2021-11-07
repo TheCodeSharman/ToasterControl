@@ -29,12 +29,12 @@ static int32_t readAverage(uint32_t pin) {
   In order to make the circuit simpler, we read the STM32 chip temperature sensor
   to get an estimate of the cold junction temperature. 
   
-  For this to work we are assuming that there is a constant thermal resistance between 
-  the microproccesor and the cold end of the K type probe. 
+  For this to work we are assuming that there is a constant offset from the
+  internal chip sensor and the cold junction.
 
   Certainly not a precision measurement, but saves us measuring the cold junction with 
   a thermister. The hope is that when the board is enclosed this offset will be
-  sufficiently stable.
+  sufficiently close to be practical.
 */
 static int32_t readInternalTempSensor()
 {
