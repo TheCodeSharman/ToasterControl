@@ -16,10 +16,13 @@ const int32_t CAL_TEMP_OFFSET_B = 134-30;
 const int32_t CAL_ADC_A = 2022;
 const int32_t CAL_ADC_B = 2716;
 
-static int32_t readAverage(uint32_t pin) {
-  int32_t value = 0;
-  int32_t i;
-  for(i=0; i<100; i++ ) {
+/*
+  Simple over sampling, returns the mean of N samples of a pin.
+*/
+uint32_t overSampleRead(int N, uint32_t pin) {
+  uint32_t value = 0;
+  uint32_t i;
+  for(i=0; i<N; i++ ) {
     value += analogRead(pin);
   }
   return value/i;
@@ -36,15 +39,15 @@ static int32_t readAverage(uint32_t pin) {
   a thermister. The hope is that when the board is enclosed this offset will be
   sufficiently close to be practical.
 */
-static int32_t readInternalTempSensor()
+int32_t readInternalTempSensor()
 {
-  return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, readAverage(ATEMP), LL_ADC_RESOLUTION_12B);
+  return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, overSampleRead(10,ATEMP), LL_ADC_RESOLUTION_12B);
 }
 
-static int32_t readKTypeProbeSensor() {
+int32_t readKTypeProbeSensor() {
 
   int32_t die_temp = readInternalTempSensor();
-  int32_t probe_val = readAverage(K_TYPE_PROBE);
+  int32_t probe_val = overSampleRead(10,K_TYPE_PROBE);
 
   // Interpolate value based on calibration constants
   int32_t k_probe_temp_delta 
