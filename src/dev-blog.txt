@@ -66,9 +66,20 @@ Cold junction compensation:
   => Thot = a*V + c + Tcold
 
 
-TODO: build firmware and use the above 
+7. incorporated the above into the firmware - gets fairly close results but depends very much on
+the offset from the die temperature to the cold end temperature, this is not constant, the environmental
+conditions of the board make a huge difference - I'm guessing +/-10 degrees.
 
-7. Possible precision improvements
+Question: if the whole system was put in a box without ventilation I would expect the system to reach thermal 
+equilibrium and thus would this offset actually drop to 0 ? Or at least a constant offset.
+
+We could try adding a thermistor at the cold end this should remove the offset error.
+
+We could just accept a fairly wide inaccuracy - and/or test this with the board enclosed and see if the offset 
+stabilises. For the intended purpose of a bang bang controlled toaster oven the temperature is not going to be
+controlled precisely anyway.
+
+9999. Possible precision improvements
 
 Not sure what the error introduced by the following systemic sources of error:
  
