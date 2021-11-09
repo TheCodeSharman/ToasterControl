@@ -9,21 +9,21 @@
 
     To use declare an instance of Every:
 
-            Every executor;
+            MultiTask tasks;
 
         In some initialisation function add some callbacks:
 
-            executor.every(1000,callbackFunction1);
-            executor.every(500,callbackFunction2);
+            tasks.every(1000,callbackFunction1);
+            tasks.every(500,callbackFunction2);
 
         Then in the main loop call process():
 
-            executor.process();
+            tasks.process();
 
     It's up to the impementor to ensure there is no blocking code and return 
     promptly - otherwise nothing will be called whilst a function is being run.
 */
-class Every {
+class MultiTask {
   uint32_t current;
   typedef struct  {
     void (*callback)();

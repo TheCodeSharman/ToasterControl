@@ -1,12 +1,12 @@
 #include <Arduino.h>
 
-#include "Every.h"
+#include "MultiTask.h" 
 #include "KTypeProbe.h"
 
 const uint8_t LED = PC13;
 
 KTypeProbe probe(A2,3300,-3,104,2022,2716);
-Every executor;
+MultiTask tasks;
 
 void displayProbeStats() {
   Serial.printf("Probe Temp(°C) = %i\n", probe.getTemperature()/1000);
@@ -22,11 +22,11 @@ void setup() {
   pinMode(LED, OUTPUT);  
   digitalWrite(LED, LOW);
   analogReadResolution(12);
-  executor.every(1000,displayProbeStats);
-  executor.every(500,blinkLed);
+  tasks.every(1000,displayProbeStats);
+  tasks.every(500,blinkLed);
 }
 
 void loop() {
-  executor.process();   
+  tasks.process();   
   probe.update();      
 }
