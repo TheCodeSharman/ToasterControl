@@ -22,7 +22,7 @@
   2.  We assume, for simplicity, that the probe value is linear with respect to the
       temperature. This reduces cold junction compensation to a simply addition of
       temperature values. Of course K-Type probes are not linear, however, they are
-      so close to linear in the region -10°C to 400°C so this is reasonable for a
+      close to linear in the region -10°C to 400°C so this is reasonable for a
       rough reading.
 */
 typedef int32_t milliCelcius_t;
