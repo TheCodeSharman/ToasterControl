@@ -29,7 +29,7 @@
   To use, instantiate the template with the required parameters to specify the 
   calibration constants. It is also possible to override the functions called to read
   the cold junction and the hot junction - this is implemented using default template
-  parameters in order to avoid bloating the data type with.
+  parameters in order to avoid requiring inheritance, since no polymorhism is needed.
 
 
 */
