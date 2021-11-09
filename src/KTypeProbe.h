@@ -32,7 +32,7 @@ class KTypeProbe
 
 private:
   milliCelcius_t coldJunction;
-  int32_t probeAdc;
+  uint32_t probeAdc;
   milliCelcius_t probeOffset;
   milliCelcius_t probe;
 
@@ -41,15 +41,15 @@ protected:
   const uint8_t K_TYPE_PROBE;
 
   // The Vref+ voltage supplied to the STM32 chip.
-  const int32_t ADC_VREF;
+  const uint32_t ADC_VREF;
 
   // Measured temperature difference from ambient
   const int32_t CAL_TEMP_OFFSET_A;
   const int32_t CAL_TEMP_OFFSET_B;
 
   // Corresponding measured ADC values
-  const int32_t CAL_ADC_A;
-  const int32_t CAL_ADC_B;
+  const uint32_t CAL_ADC_A;
+  const uint32_t CAL_ADC_B;
 
 public:
   KTypeProbe(const uint8_t K_TYPE_PROBE, const int32_t ADC_VREF,
@@ -62,16 +62,17 @@ public:
   {
   }
 
-  milliCelcius_t getColdJunction() const { return coldJunction; }
-  milliCelcius_t getProbeOffset() const { return probeOffset; }
-  milliCelcius_t getTemperature() const { return probe; }
+  milliCelcius_t  getColdJunction() const { return coldJunction; }
+  uint32_t        getProbeAdc() const { return probeAdc; }
+  milliCelcius_t  getProbeOffset() const { return probeOffset; }
+  milliCelcius_t  getTemperature() const { return probe; }
 
-  milliCelcius_t update();
+  milliCelcius_t  update();
 
 protected:
   // over ride the following to customise how the probe reads it's temperature
   virtual milliCelcius_t readColdJunction();
-  virtual int32_t readProbe();
+  virtual uint32_t readProbe();
 
 };
 
