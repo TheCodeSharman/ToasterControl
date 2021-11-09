@@ -9,7 +9,8 @@ KTypeProbe probe(A2,3300,-3,104,2022,2716);
 MultiTask tasks;
 
 void displayProbeStats() {
-  Serial.printf("Probe Temp(°C) = %i\n", probe.getTemperature()/1000);
+  Serial.printf("Probe Temp(°C) = %i (coldJunction = %i, probeAdc = %u)\n", 
+    probe.getTemperature()/1000, probe.getColdJunction()/1000, probe.getProbeAdc() );
 }
 
 void blinkLed() {
