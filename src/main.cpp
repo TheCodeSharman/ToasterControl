@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "KTypeProbe.hpp"
+#include "KTypeProbe.h"
 
 #define LED PC13
 
