@@ -1,4 +1,5 @@
 #include "KTypeProbe.h"
+#include "stm32yyxx_ll_adc.h"
 
 /*
     Simple over sampling, returns the mean of N samples of a pin.

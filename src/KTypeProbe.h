@@ -2,7 +2,7 @@
 #define KTYPE_PROBE_H
 
 #include <Arduino.h>
-#include "stm32yyxx_ll_adc.h"
+
 
 /*
   Very imprecise K-Type probe temperature sensing.
