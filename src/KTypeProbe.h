@@ -1,4 +1,5 @@
-#pragma once
+#ifndef KTYPE_PROBE_H
+#define KTYPE_PROBE_H
 
 #include <Arduino.h>
 #include "stm32yyxx_ll_adc.h"
@@ -26,79 +27,52 @@
 */
 typedef int32_t milliCelcius_t;
 
-class KTypeProbe {
+class KTypeProbe
+{
 
-  private:
-    milliCelcius_t coldJunction;
-    int32_t probeAdc;
-    milliCelcius_t probeOffset;
-    milliCelcius_t probe;
+private:
+  milliCelcius_t coldJunction;
+  int32_t probeAdc;
+  milliCelcius_t probeOffset;
+  milliCelcius_t probe;
 
-  public:
-    milliCelcius_t getColdJunction() const { return coldJunction; }
-    milliCelcius_t getProbeOffset() const { return probeOffset; }
-    milliCelcius_t getTemperature() const { return probe; }
+protected:
+  // Pin that is attached to the K Type probe
+  const uint8_t K_TYPE_PROBE;
 
-  public:
-    KTypeProbe(const uint8_t K_TYPE_PROBE, const int32_t ADC_VREF,
-        const int32_t CAL_TEMP_OFFSET_A, const int32_t CAL_TEMP_OFFSET_B,
-        const int32_t CAL_ADC_A, const int32_t CAL_ADC_B)
+  // The Vref+ voltage supplied to the STM32 chip.
+  const int32_t ADC_VREF;
+
+  // Measured temperature difference from ambient
+  const int32_t CAL_TEMP_OFFSET_A;
+  const int32_t CAL_TEMP_OFFSET_B;
+
+  // Corresponding measured ADC values
+  const int32_t CAL_ADC_A;
+  const int32_t CAL_ADC_B;
+
+public:
+  KTypeProbe(const uint8_t K_TYPE_PROBE, const int32_t ADC_VREF,
+             const int32_t CAL_TEMP_OFFSET_A, const int32_t CAL_TEMP_OFFSET_B,
+             const int32_t CAL_ADC_A, const int32_t CAL_ADC_B)
       : K_TYPE_PROBE(K_TYPE_PROBE),
         ADC_VREF(ADC_VREF),
         CAL_TEMP_OFFSET_A(CAL_TEMP_OFFSET_A), CAL_TEMP_OFFSET_B(CAL_TEMP_OFFSET_B),
         CAL_ADC_A(CAL_ADC_A), CAL_ADC_B(CAL_ADC_B)
-    {}
+  {
+  }
 
-  public:
+  milliCelcius_t getColdJunction() const { return coldJunction; }
+  milliCelcius_t getProbeOffset() const { return probeOffset; }
+  milliCelcius_t getTemperature() const { return probe; }
 
-    // Pin that is attached to the K Type probe
-    const uint8_t K_TYPE_PROBE;
+  milliCelcius_t update();
 
-    // The Vref+ voltage supplied to the STM32 chip.
-    const int32_t ADC_VREF; 
+protected:
+  // over ride the following to customise how the probe reads it's temperature
+  virtual milliCelcius_t readColdJunction();
+  virtual int32_t readProbe();
 
-    // Measured temperature difference from ambient
-    const int32_t CAL_TEMP_OFFSET_A;
-    const int32_t CAL_TEMP_OFFSET_B;
-
-    // Corresponding measured ADC values
-    const int32_t CAL_ADC_A;
-    const int32_t CAL_ADC_B;
-
-  private:
-
-    /*
-      Simple over sampling, returns the mean of N samples of a pin.
-    */
-    uint32_t overSampleRead(int N, uint32_t pin) {
-      uint32_t value = 0;
-      int i;
-      for(i=0; i<N; i++ ) {
-        value += analogRead(pin);
-      }
-      return value/i;
-    }
-
-  protected:
-    /* Read the cold junction temperature in milli °C */
-    virtual milliCelcius_t readColdJunction() {
-      return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, overSampleRead(10,ATEMP), LL_ADC_RESOLUTION_12B) * 1000;
-    }
-
-    /* Read the value of the attached K Type probe in ADC units */
-    virtual int32_t readProbe() {
-      return overSampleRead(10,K_TYPE_PROBE);
-    }
-
-  public:
-    milliCelcius_t update() {
-        coldJunction = readColdJunction();
-        probeAdc = readProbe();
-        probeOffset 
-          = CAL_TEMP_OFFSET_A * 1000 + 
-            (CAL_TEMP_OFFSET_B - CAL_TEMP_OFFSET_A) * 1000 *
-            (probeAdc-CAL_ADC_A)/(CAL_ADC_B-CAL_ADC_A);
-        probe = probeOffset + coldJunction;
-        return probe;
-    };
 };
+
+#endif
