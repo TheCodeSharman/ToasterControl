@@ -5,7 +5,8 @@
 
 const uint8_t LED = PC13;
 
-KTypeProbe probe(A2,3300,-3,104,2022,2716);
+KProbeCalibration K_PROBE_CAL = { -3, 104, 2022, 2716 };
+KTypeProbe<A2,3300,K_PROBE_CAL> probe;
 MultiTask tasks;
 
 void displayProbeStatus() {
@@ -23,6 +24,7 @@ void setup() {
   pinMode(LED, OUTPUT);  
   digitalWrite(LED, LOW);
   analogReadResolution(12);
+  
   tasks.every(1000,displayProbeStatus);
   tasks.every(500,blinkLed);
 }

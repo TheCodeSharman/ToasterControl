@@ -2,6 +2,7 @@
 #define KTYPE_PROBE_H
 
 #include <Arduino.h>
+#include "stm32yyxx_ll_adc.h"
 
 
 /*
@@ -24,8 +25,41 @@
       temperature values. Of course K-Type probes are not linear, however, they are
       close to linear in the region -10°C to 400°C so this is reasonable for a
       rough reading.
+      
+  To use, instantiate the template with the required parameters to specify the 
+  calibration constants. It is also possible to override the functions called to read
+  the cold junction and the hot junction - this is implemented using default template
+  parameters in order to avoid bloating the data type with.
+
+
 */
 typedef int32_t milliCelcius_t;
+
+
+uint32_t overSampleRead(int N, uint32_t pin);
+
+template<uint32_t ADC_VREF>
+milliCelcius_t defaultReadColdJunction(){
+  return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, overSampleRead(10, ATEMP), LL_ADC_RESOLUTION_12B) * 1000;
+}
+
+template<uint8_t K_TYPE_PROBE>
+uint32_t defaultReadProbe(){
+  return overSampleRead(10, K_TYPE_PROBE);
+}
+
+typedef struct {
+  const int32_t tempOffsetA;
+  const int32_t tempOffsetB;
+  const uint32_t adcA;
+  const uint32_t adcB;
+} KProbeCalibration;
+
+template<uint8_t K_TYPE_PROBE,
+         uint32_t ADC_VREF,
+         const KProbeCalibration& calibration,
+         milliCelcius_t (*readColdJunction)() = defaultReadColdJunction<ADC_VREF>,
+         uint32_t (*readProbe)() = defaultReadProbe<K_TYPE_PROBE>>
 
 class KTypeProbe
 {
@@ -34,46 +68,20 @@ private:
   milliCelcius_t coldJunction;
   uint32_t probeAdc;
   milliCelcius_t probeOffset;
-  milliCelcius_t probe;
-
-protected:
-  // Pin that is attached to the K Type probe
-  const uint8_t K_TYPE_PROBE;
-
-  // The Vref+ voltage supplied to the STM32 chip.
-  const uint32_t ADC_VREF;
-
-  // Measured temperature difference from ambient
-  const int32_t CAL_TEMP_OFFSET_A;
-  const int32_t CAL_TEMP_OFFSET_B;
-
-  // Corresponding measured ADC values
-  const uint32_t CAL_ADC_A;
-  const uint32_t CAL_ADC_B;
 
 public:
-  KTypeProbe(const uint8_t K_TYPE_PROBE, const int32_t ADC_VREF,
-             const int32_t CAL_TEMP_OFFSET_A, const int32_t CAL_TEMP_OFFSET_B,
-             const int32_t CAL_ADC_A, const int32_t CAL_ADC_B)
-      : K_TYPE_PROBE(K_TYPE_PROBE),
-        ADC_VREF(ADC_VREF),
-        CAL_TEMP_OFFSET_A(CAL_TEMP_OFFSET_A), CAL_TEMP_OFFSET_B(CAL_TEMP_OFFSET_B),
-        CAL_ADC_A(CAL_ADC_A), CAL_ADC_B(CAL_ADC_B)
-  {
-  }
-
   milliCelcius_t  getColdJunction() const { return coldJunction; }
   uint32_t        getProbeAdc() const { return probeAdc; }
   milliCelcius_t  getProbeOffset() const { return probeOffset; }
-  milliCelcius_t  getTemperature() const { return probe; }
+  milliCelcius_t  getTemperature() const { return probeOffset + coldJunction; }
 
-  milliCelcius_t  update();
-
-protected:
-  // over ride the following to customise how the probe reads it's temperature
-  virtual milliCelcius_t readColdJunction();
-  virtual uint32_t readProbe();
-
+  void update() {
+    coldJunction = readColdJunction();
+    probeAdc = readProbe();
+    probeOffset = calibration.tempOffsetA * 1000 +
+                  (calibration.tempOffsetB - calibration.tempOffsetA) * 1000 *
+                      (((int32_t)probeAdc) - (int32_t)calibration.adcA) / ((int32_t)calibration.adcB - (int32_t)calibration.adcA);
+  };
 };
 
 #endif
