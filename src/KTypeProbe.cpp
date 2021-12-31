@@ -10,3 +10,7 @@ uint32_t overSampleRead(int N, uint32_t pin) {
     }
     return value/i;
 }
+
+milliCelcius_t defaultReadColdJunction(){
+  return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, overSampleRead(10, ATEMP), LL_ADC_RESOLUTION_12B) * 1000;
+}

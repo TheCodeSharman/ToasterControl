@@ -33,15 +33,33 @@
 
 
 */
+
+#ifndef ADC_VREF
+#define ADC_VREF 3300
+#endif
+
 typedef int32_t milliCelcius_t;
+
+
 
 
 uint32_t overSampleRead(int N, uint32_t pin);
 
-template<uint32_t ADC_VREF>
-milliCelcius_t defaultReadColdJunction(){
-  return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, overSampleRead(10, ATEMP), LL_ADC_RESOLUTION_12B) * 1000;
-}
+/*
+  FIXME: 
+  
+  This assumes resolution of ADC is set to 12 - which may not be the case.
+  Nothing else assumes this, we could add a new parameter to the template that 
+  defines the ADC resolution. 
+  
+  But that seems unnecessary. 
+  
+  For that matter ADC_VREF is only used below, since it is irrelevant given the 
+  calibration data.
+
+
+*/
+milliCelcius_t defaultReadColdJunction();
 
 template<uint8_t K_TYPE_PROBE>
 uint32_t defaultReadProbe(){
@@ -56,9 +74,8 @@ typedef struct {
 } KProbeCalibration;
 
 template<uint8_t K_TYPE_PROBE,
-         uint32_t ADC_VREF,
          const KProbeCalibration& calibration,
-         milliCelcius_t (*readColdJunction)() = defaultReadColdJunction<ADC_VREF>,
+         milliCelcius_t (*readColdJunction)() = defaultReadColdJunction,
          uint32_t (*readProbe)() = defaultReadProbe<K_TYPE_PROBE>>
 
 class KTypeProbe
