@@ -1,6 +1,9 @@
 $fa = 1;
 $fs = 0.5;
 
+wall_thickness = 2;
+lid_thickness = 2;
+fit_tolerance = 0.5;
 
 board_pcb_thickness = 1.55;
 probe_conn_height=19.0;
@@ -19,6 +22,15 @@ probe_conn_length=19.8;
 probe_conn_offset_y=34;
 probe_conn_offset_x=9.5;
 
+probe_negative_pin_w=3.0;
+probe_positive_pin_w=2.5;
+probe_pin_height=1.0;
+probe_pin_length=12.5;
+probe_pin_gap=5.2;
+probe_pin_offset_y=probe_pin_length-wall_thickness-fit_tolerance;
+probe_pin_offset_x=-0.5;
+probe_pin_offset_z=3.8; // from bottom of probe connector
+
 ssr_conn_width=8.5;
 ssr_conn_height=12.0;
 ssr_conn_length=11.6;
@@ -35,9 +47,7 @@ micro_length=50.2;
 micro_width=20.8;
 micro_offset_y=-15.6;
 
-wall_thickness = 2;
-lid_thickness = 2;
-fit_tolerance = 0.5;
+
 pcb_mount_screw_offset = 34;
 lid_screw_offset = 4.7; 
 
@@ -68,7 +78,7 @@ length = board_length + wall_thickness*2 + fit_tolerance*2;
 module pcb_board() {
     // pcb board
     color("white")
-        translate([0,-(board_length - board_pcb_length)/2,0])
+        translate([0,-(board_length - board_pcb_length)/2,board_pcb_thickness/2])
        cube([board_width,board_pcb_length,board_pcb_thickness],true);
 }
 
@@ -87,6 +97,21 @@ module probe_conn() {
         cube([probe_conn_width,probe_conn_length,probe_conn_height],true);
 }
 
+module probe_socket_pins() {
+
+    socket_width=probe_positive_pin_w+probe_negative_pin_w+probe_pin_gap;
+    translate([0,-probe_pin_offset_y,board_pcb_thickness/2])
+    translate([ probe_pin_offset_x + probe_conn_offset_x - probe_conn_width/2 + socket_width/2 ,
+                    probe_conn_offset_y + probe_conn_length/2 + probe_pin_length/2,
+                    probe_pin_offset_z+board_pcb_thickness ])
+        union() {
+            color("red")
+                cube([probe_positive_pin_w + fit_tolerance,probe_pin_length,probe_pin_height + fit_tolerance],true);
+            translate([probe_pin_gap,0,0]) color("black")
+                cube([probe_negative_pin_w+ fit_tolerance,probe_pin_length,probe_pin_height+ fit_tolerance],true);
+        }
+}
+
 module ssr_conn() {
     color("green")
         translate([ ssr_conn_offset_x,
@@ -100,7 +125,7 @@ module ssr_plug() {
                 ssr_conn_offset_y,
                 ssr_plug_height/2+ssr_conn_height+board_pcb_thickness ])
         union() {
-            cable_angle=18;
+            cable_angle=90;
             color("green")
                 cube([ssr_plug_width,ssr_plug_length,ssr_plug_height],true);
             color("red")
@@ -114,7 +139,7 @@ module ssr_plug() {
 }
 
 module pcb_board_assembly() {
-    translate([0,board_length/2,board_pcb_thickness/2])
+    translate([0,board_length/2,0])
     union() {
         translate([0,0,board_height/2])
         *cube([board_width,board_length,board_height],true);
@@ -124,6 +149,7 @@ module pcb_board_assembly() {
         probe_conn();
         ssr_conn();
         ssr_plug();
+        probe_socket_pins();
     }
 }
 
@@ -176,26 +202,28 @@ module front_mount_hut_holder() {
     difference() {
         cube([mount_width,mount_length,mount_height],true);
         cube([nut1_width+fit_tolerance,nut1_depth+fit_tolerance,mount_height],true);
-        translate([0,2.5,-mount_height/2]) rotate([12,0,0]) translate([0,0,-1]) cube([mount_width*2,mount_length*2,4],true);
+        translate([0,2.5,-mount_height/2]) rotate([12,0,0]) translate([0,0,-1]) 
+            cube([mount_width*2,mount_length*2,4],true);
     }
 }
 
 module front_mount_nut_holders() {
-    
     translate([0,mount_length/2-wall_thickness,0])
-    difference() {
-        union() {
-                translate([ -front_screw_gap/2 + screw1/2 + front_screw_offset_w,
-                            -fit_tolerance, front_screw_offset_h ]) 
-                    front_mount_hut_holder();
-                
-                translate([ front_screw_gap/2 - screw1/2 + front_screw_offset_w,
-                            -fit_tolerance, front_screw_offset_h ]) 
-                    front_mount_hut_holder();
-            }
-        front_mount_screws();
-    }
+        difference() {
+            union() {
+                    translate([ -front_screw_gap/2 + screw1/2 + front_screw_offset_w,
+                                -fit_tolerance, front_screw_offset_h ]) 
+                        front_mount_hut_holder();
+                    
+                    translate([ front_screw_gap/2 - screw1/2 + front_screw_offset_w,
+                                -fit_tolerance, front_screw_offset_h ]) 
+                        front_mount_hut_holder();
+                }
+            front_mount_screws();
+        }
 }
+
+
 
 module body() {
     union() {
@@ -212,6 +240,8 @@ module body() {
         
             usb_connector();
             front_mount_screws();
+            translate([0,board_length/2+2,0]) // offset by 2 to ensure holes are cut
+                probe_socket_pins();
         }
         front_mount_nut_holders();
         pcb_mounts();
@@ -255,13 +285,14 @@ module lid(explode) {
                         cylinder(lid_thickness,r=screw1/2);
                 }
             }
-            translate([0,board_length/2,board_pcb_thickness/2])
+            translate([0,board_length/2,2]) // offset by 2 to ensure holes are cut
                 ssr_plug();
         }
 }
 
 union() {
     *pcb_board_assembly();
-    body();
-    *lid(0);
+    *body();
+    
+    lid(0);
 }
