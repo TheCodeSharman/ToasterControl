@@ -1,8 +1,8 @@
 #ifndef COMMAND_PROCESSOR_H
 #define COMMAND_PROCESSOR_H
 
-#include <GCodeParser.h>
 #include <Arduino.h>
+#include <GCodeParser.h>
 /*
     Command processor is responsible for recieve bytes from the serial
     port and executing G-Code commands.

@@ -7,7 +7,10 @@ CommandProcessor::CommandProcessor(Stream& output): output( output ) {
 void CommandProcessor::jumpToBootloader() {
     HAL_RCC_DeInit();
     HAL_DeInit();
-    __HAL_REMAPMEMORY_SYSTEMFLASH();
+    SysTick->CTRL = 0;
+	SysTick->LOAD = 0;
+	SysTick->VAL = 0;
+    __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
     // arm-none-eabi-gcc 4.9.0 does not correctly inline this
     // MSP function, so we write it out explicitly here.
     //__set_MSP(*((uint32_t*) 0x00000000));
