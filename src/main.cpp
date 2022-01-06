@@ -33,8 +33,9 @@ void setup() {
   digitalWrite(PA15,HIGH);
   digitalWrite(LED, LOW);
   analogReadResolution(12);
-  tasks.every(1000,displayProbeStatus);
+  // tasks.every(1000,displayProbeStatus);
   tasks.every(500,blinkLed);
+  delay(500);
   command.init();
 }
 
@@ -45,7 +46,7 @@ void processSerial() {
 }
 
 void loop() {
-  
+  processSerial();
   tasks.process();   
   probe.update();      
 }

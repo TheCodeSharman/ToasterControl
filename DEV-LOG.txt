@@ -1,0 +1,25 @@
+3/1/2022
+
+Finished initial design and after a lot of trouble calibrating the the 3d printer for ABS got
+a first print:
+- ABS shrinks, I didn't account for that
+- PCB doesn't have enough space to slot into the angles under the nut holders
+- the probe socket pins are incorrectly spaced ( too narrow )
+- the USB connector is too far from front case
+- the holes in the panel didn't line up of the right hand side (mismeasurement)
+- holes too small for screws (shrinkage?)
+- the lid fits too loose (shrinkage + 2*fit_tolerance)
+- the hole for the SSR plug is a tight fit but works.
+- support material got inside the but holders mkaing them useless.
+
+Mods
+- removed nut holders they were unnecessary
+- a melted a slot in the front panel to allow the PCB to get slightly closer
+  and thus slot into the case properly.
+- drilled out holes for lid screws 
+- drilled out hole for PCB attachment 
+- melted the pins on the thermister plug to "fit"
+- drilled hole through front panel screw hole
+
+After that everything seems to fit nicely.
+Since this is a once off prototype I haven't fixed the model. 
