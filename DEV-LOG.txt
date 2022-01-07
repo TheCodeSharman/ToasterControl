@@ -1,4 +1,105 @@
-3/1/2022
+6/11/2021
+
+1. build basic test circuit
+
+built prototype amplifier using power supply -5V, G, +5V
+unable to get the output pin to amplify the input - it saturates
+
+2. diagnose circuit, simplify 
+read datasheet, learned that there needs to be a current path from input pins to ref.
+added this, but still no go!.
+
+replaced input by a potentiometer to debug circuit. no go.
+traced the voltages around the circuit and noted that -5V wasn't reaching pin 4.
+fixed this, and can get output via potentiometer.
+
+replaced potentimeter with k type probe
+
+chose a value for Rg - 860ohm this gives a gain of 5 + 10k/860 ~= 150
+
+3. move to single power supply with voltage divider method
+
+use 1k2 resister to give a voltage reference - a solution to operating off a single supply but is not ideal because:
+  - the voltage is not "stiff" unless the impedence is low but low impedence implies higher current draw
+  - halves the voltage range 
+
+go this working ok.
+
+plugged in microprocessor with 3.3V ADC - so used g and 3.3V supply to power amplifier
+
+noticed there was a lot of noise on the output - put 0.1uf caps on input lines to dramatically reduce.
+
+4. moved from breadboard to PCB
+
+again no go - output saturates
+inspected PCB and couldn't find any bad joints
+
+voltages all seem good - preplexed
+
+5. Diagnose issues
+
+switched back to dual power supply - stil no go!
+removed microprocessor and used power supply for power - working as expected!!
+
+checked voltages again - noticed that pin 4 was 0V when pin 4 is supposed to be -3.3V (not sure how I missed that)
+turns out pin 4 was bridged to the GND on the microprocessor - so saturating in the same way as the first problem i had !!
+
+removed solder bridges
+
+tested k type probe and noticed it was dead. replaced probe.
+
+everything seems to work.
+
+6. Look for equations for k type probe
+
+see attached spreadsheet. 
+standard NIST polynomial has 9 terms !
+suggested P/Q approximation has 6 coefficients.
+
+Out of curiousity I did a linear regression over the 0 to 400 degrees which is more than adequate for my application,
+Found a linear equation that gives a very close match over that range.
+
+So we'll use that.
+
+Thot = 24.487*Vprobe + 0.312
+
+Cold junction compensation:
+  a*V + c = Thot - Tcold
+  => Thot = a*V + c + Tcold
+
+
+7. incorporated the above into the firmware - gets fairly close results but depends very much on
+the offset from the die temperature to the cold end temperature, this is not constant, the environmental
+conditions of the board make a huge difference - I'm guessing +/-10 degrees.
+
+Question: if the whole system was put in a box without ventilation I would expect the system to reach thermal 
+equilibrium and thus would this offset actually drop to 0 ? Or at least a constant offset.
+
+We could try adding a thermistor at the cold end this should remove the offset error.
+
+We could just accept a fairly wide inaccuracy - and/or test this with the board enclosed and see if the offset 
+stabilises. For the intended purpose of a bang bang controlled toaster oven the temperature is not going to be
+controlled precisely anyway.
+
+9999. Possible precision improvements
+
+Not sure what the error introduced by the following systemic sources of error:
+ 
+  1. ADC imprecision, we're not using the whole ADC range from GND to -3.3V
+  2. measureing the DC offset via ADC adds own error
+  3. using ambient die temperature - calibrated to equal cold jucntion temperature by an offset
+
+Fixes
+
+1+2. Use 5V rail for postive power rail, and build capicator diode pump to create negative voltage, use PWM pin 
+   output on microprocessor to create oscillator for diode pump. This should get us a negative voltage.
+   We can then remove the need to measure Vref, since it will also be GND. By changing the gain we can increase
+   the range over of the measured voltage over the 0 to 300 degrees range.
+
+3. Measure the cold junction temperature with a thermister - this should get an much more precise value for Tcold end.
+
+
+3/01/2022
 
 Finished initial design and after a lot of trouble calibrating the the 3d printer for ABS got
 a first print:
@@ -9,6 +110,7 @@ a first print:
 - the holes in the panel didn't line up of the right hand side (mismeasurement)
 - holes too small for screws (shrinkage?)
 - the lid fits too loose (shrinkage + 2*fit_tolerance)
+- the lid needs support underneath where the screws aren't supporting it.
 - the hole for the SSR plug is a tight fit but works.
 - support material got inside the but holders mkaing them useless.
 
@@ -23,3 +125,16 @@ Mods
 
 After that everything seems to fit nicely.
 Since this is a once off prototype I haven't fixed the model. 
+
+7/01/2022
+
+- Implemented GCodeParser: note that in future, I'll think I'll write
+  a better parser, there is no error handling with this library. More 
+  research required to find out syntax for GCode. (see Marlin source code?)
+
+- Had a lot of trouble gettting the blackpill board to enter the 
+  DFU bootloader. In order to make this livable I added an M997
+  Gcode command that enters the system bootloader programmatically.
+  This appears to be much more reliable than the BOOT0 + RESET pin
+  combo. (Hypotheses: transient currents during startup mess with USB somehow?)
+  (code mdofied from here: )
