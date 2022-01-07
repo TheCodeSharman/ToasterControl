@@ -1,12 +1,13 @@
 #include "CommandProcessor.h"
+#include "KTypeProbe.h"
 
-
-CommandProcessor::CommandProcessor(Stream& output)
+CommandProcessor::CommandProcessor(Stream& output, PidController& oven)
     : output( output ),
-      m104( output, GCode ),
-      m997(GCode ) {
+      m104( output, GCode, oven ),
+      m105( output, GCode, oven ),
+      m997( GCode ) {
     commands = std::vector<AbstractGCodeCommand*> {
-         &m104, &m997 };
+         &m104, &m105, &m997 };
 }
 
 void CommandProcessor::processCommand() {

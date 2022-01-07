@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "GCode.h"
-
+#include "PidController.h"
 /*
     Command processor is responsible for recieve bytes from the serial
     port and executing G-Code commands.
@@ -15,12 +15,13 @@ class CommandProcessor {
     GCodeParser GCode = GCodeParser();
     Stream& output;
 
+    M105 m105;
     M104 m104;
     M997 m997;
     std::vector<AbstractGCodeCommand*> commands;
 
     public:
-        CommandProcessor(Stream& output);
+        CommandProcessor(Stream& output, PidController& oven);
 
     private:
         void processCommand();

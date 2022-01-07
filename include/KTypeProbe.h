@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include "stm32yyxx_ll_adc.h"
 
+#include "Sensor.h"
+
 
 /*
   Very imprecise K-Type probe temperature sensing.
@@ -62,17 +64,10 @@ typedef struct {
   const uint32_t adcB;
 } KProbeCalibration;
 
-class Sensor {
-  public:
-    virtual double readSensor() = 0;
-};
-
 class KTypeProbe : public Sensor
 {
 public:
-  KTypeProbe( const uint8_t probePin, KProbeCalibration& calibration )
-    : probePin(probePin), calibration(calibration)
-  {}
+  KTypeProbe( const uint8_t probePin, KProbeCalibration& calibration );
 
 private:
   uint32_t overSampleRead(int N, uint32_t pin);
@@ -83,6 +78,8 @@ private:
   const uint8_t probePin;
 
 public:
+  void setup();
+  
   milliCelcius_t  getColdJunction() { return coldJunction; }
   uint32_t        getProbeAdc() { return probeAdc; }
   milliCelcius_t  getProbeOffset() { return probeOffset; }

@@ -18,6 +18,7 @@ class AbstractGCodeCommand {
 };
 
 #include "gcodes/M104.h"
+#include "gcodes/M105.h"
 #include "gcodes/M997.h"
 
 #endif

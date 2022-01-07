@@ -11,5 +11,9 @@ bool M104::match() {
 
 void M104::execute() {
     double temp = GCode.GetWordValue('S');
-    output.printf("Target Temperature = %f °C\r\n", temp);
+    if ( temp > 0 ) {
+        oven.start(temp);
+    } else {
+        oven.stop();
+    }
 }

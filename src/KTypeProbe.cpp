@@ -1,4 +1,17 @@
 #include "KTypeProbe.h"
+
+
+KTypeProbe::KTypeProbe( const uint8_t probePin, KProbeCalibration& calibration )
+    : probePin(probePin), calibration(calibration)
+{
+
+}
+
+void KTypeProbe::setup() {
+    analogReadResolution(12);
+    pinMode(probePin, INPUT); 
+}
+
 /*
     Simple over sampling, returns the mean of N samples of a pin.
 */

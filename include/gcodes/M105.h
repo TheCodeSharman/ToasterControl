@@ -1,20 +1,21 @@
-#ifndef M104_H
-#define M104_H
+#ifndef M105_H
+#define M105_H
 
 #include <Arduino.h>
 
 #include "GCode.h"
+#include "KTypeProbe.h"
 #include "PidController.h"
 
 /*
-    Sets the temperature of the oven
+    Reports the temperature of the oven
 */
-class M104 : public AbstractGCodeCommand {
+class M105 : public AbstractGCodeCommand {
     private:
-        Stream& output;
         PidController& oven;
+        Stream& output;
     public:
-        M104(Stream& output, GCodeParser& GCode, PidController& oven) 
+        M105(Stream& output, GCodeParser& GCode, PidController& oven) 
             : output(output), AbstractGCodeCommand(GCode), oven(oven) {}
         virtual bool match();
         virtual void execute();
