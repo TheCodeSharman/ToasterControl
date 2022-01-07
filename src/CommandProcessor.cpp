@@ -28,7 +28,7 @@ void CommandProcessor::init() {
 void CommandProcessor::addByte(char inChar) {
     // Output input as feedback to serial monitor users
     // but suppress carriage return and line feed characters
-    // so the tmerinal prompt is displaed as expected.
+    // so the terminal prompt is displayed as expected.
     if ( inChar != '\n' && inChar != '\r')
         output.print(inChar);
         

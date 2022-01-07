@@ -2,7 +2,7 @@
 #define CONTROLLED_DEVICE_H
 
 /*
-    A device that can be controller by setting a single value.
+    A device that can be controlled by setting a single value.
 */
 class ControlledDevice {
   public:
