@@ -36,7 +36,6 @@ void setup() {
   
   tasks.every(1000,displayProbeStatus);
   tasks.every(500,blinkLed);
-  delay(500);
   command.init();
 }
 
