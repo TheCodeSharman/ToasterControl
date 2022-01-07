@@ -10,7 +10,7 @@ class PidController {
     private:
         Sensor& input;
         ControlledDevice& output;
-        
+
         double inputValue;
         double outputValue;
         double setPoint;
@@ -22,6 +22,8 @@ class PidController {
         double getInput() { return inputValue; }
         double getSetPoint() { return setPoint; }
         double getOutputValue() { return outputValue; }
+
+        void setSetPoint( double setPoint ) { this->setPoint = setPoint; }
 
         PidController( Sensor& input, ControlledDevice& output, double Kp, double Ki, double Kd );
         void process();

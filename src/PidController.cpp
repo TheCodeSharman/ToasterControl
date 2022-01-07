@@ -16,11 +16,12 @@ void PidController::process() {
 }
 
 void PidController::start( double setPoint ) {
-    this->setPoint = setPoint;
+    setSetPoint(setPoint);
     pid.SetMode(AUTOMATIC);
 }
 
 void PidController::stop() {
     pid.SetMode(MANUAL);
+    setSetPoint(setPoint);
     output.setValue(0);
 }
