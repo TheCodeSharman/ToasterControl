@@ -14,11 +14,7 @@ void M997::execute() {
 	SysTick->LOAD = 0;
 	SysTick->VAL = 0;
     __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
-    // arm-none-eabi-gcc 4.9.0 does not correctly inline this
-    // MSP function, so we write it out explicitly here.
-    //__set_MSP(*((uint32_t*) 0x00000000));
-    #pragma GCC diagnostic ignored "-Wdeprecated"
-    __ASM volatile ("movs r3, #0\nldr r3, [r3, #0]\nMSR msp, r3\n" : : : "r3", "sp");
+    __set_MSP(*((uint32_t*) 0x00000000));
+    //__ASM volatile ("MSR msp, %0" : "r" (*((uint32_t*) 0x00000000)));
     ((void (*)(void)) *((uint32_t*) 0x00000004))();
-    #pragma GCC diagnostic pop
 }
