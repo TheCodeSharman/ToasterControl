@@ -40,11 +40,6 @@
 
 typedef int32_t milliCelcius_t;
 
-
-
-
-uint32_t overSampleRead(int N, uint32_t pin);
-
 /*
   FIXME: 
   
@@ -59,12 +54,6 @@ uint32_t overSampleRead(int N, uint32_t pin);
 
 
 */
-milliCelcius_t defaultReadColdJunction();
-
-template<uint8_t K_TYPE_PROBE>
-uint32_t defaultReadProbe(){
-  return overSampleRead(10, K_TYPE_PROBE);
-}
 
 typedef struct {
   const int32_t tempOffsetA;
@@ -73,32 +62,36 @@ typedef struct {
   const uint32_t adcB;
 } KProbeCalibration;
 
-template<uint8_t K_TYPE_PROBE,
-         const KProbeCalibration& calibration,
-         milliCelcius_t (*readColdJunction)() = defaultReadColdJunction,
-         uint32_t (*readProbe)() = defaultReadProbe<K_TYPE_PROBE>>
+class Sensor {
+  public:
+    virtual double readSensor() = 0;
+};
 
-class KTypeProbe
+class KTypeProbe : public Sensor
 {
+public:
+  KTypeProbe( const uint8_t probePin, KProbeCalibration& calibration )
+    : probePin(probePin), calibration(calibration)
+  {}
 
 private:
+  uint32_t overSampleRead(int N, uint32_t pin);
+  const KProbeCalibration& calibration;
   milliCelcius_t coldJunction;
   uint32_t probeAdc;
   milliCelcius_t probeOffset;
+  const uint8_t probePin;
 
 public:
-  milliCelcius_t  getColdJunction() const { return coldJunction; }
-  uint32_t        getProbeAdc() const { return probeAdc; }
-  milliCelcius_t  getProbeOffset() const { return probeOffset; }
-  milliCelcius_t  getTemperature() const { return probeOffset + coldJunction; }
+  milliCelcius_t  getColdJunction() { return coldJunction; }
+  uint32_t        getProbeAdc() { return probeAdc; }
+  milliCelcius_t  getProbeOffset() { return probeOffset; }
+  milliCelcius_t  getTemperature() { return probeOffset + coldJunction; }
 
-  void update() {
-    coldJunction = readColdJunction();
-    probeAdc = readProbe();
-    probeOffset = calibration.tempOffsetA * 1000 +
-                  (calibration.tempOffsetB - calibration.tempOffsetA) * 1000 *
-                      (((int32_t)probeAdc) - (int32_t)calibration.adcA) / ((int32_t)calibration.adcB - (int32_t)calibration.adcA);
-  };
+  virtual milliCelcius_t readColdJunction();
+  virtual uint32_t readProbeAdc();
+  virtual milliCelcius_t readTemperature();
+  virtual double readSensor();
 };
 
 #endif

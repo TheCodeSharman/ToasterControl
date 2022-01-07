@@ -17,7 +17,7 @@ class CommandProcessor {
 
     private:
         void jumpToBootloader();
-        void setTemperature(double temp);
+        void setTemperature(int temp);
         void processCommand();
 
     public:

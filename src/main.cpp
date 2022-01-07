@@ -1,18 +1,15 @@
-
-
 #include <Arduino.h>
 
 #include "MultiTask.h" 
 #include "KTypeProbe.h"
 #include "CommandProcessor.h"
 
-
-#define ADC_VREF 3300
-
-const uint8_t LED = PC13; 
+const uint8_t LED_PIN = PC13; 
+const uint8_t K_PROBE_PIN = A2;
+const uint8_t HEATER_PIN = PA15;
 
 KProbeCalibration K_PROBE_CAL = { -3, 104, 2022, 2716 };
-KTypeProbe<A2,K_PROBE_CAL> probe;
+KTypeProbe probe(K_PROBE_PIN,K_PROBE_CAL);
 MultiTask tasks;
 CommandProcessor command(Serial);
 
@@ -23,16 +20,20 @@ void displayProbeStatus() {
 
 void blinkLed() {
   static bool isLedOn = false;
-  digitalWrite(LED, (isLedOn?HIGH:LOW));
+  digitalWrite(LED_PIN, (isLedOn?HIGH:LOW));
   isLedOn = !isLedOn;
 }
 
 void setup() {
-  pinMode(LED, OUTPUT);  
-  pinMode(PA15,OUTPUT);
-  digitalWrite(PA15,HIGH);
-  digitalWrite(LED, LOW);
   analogReadResolution(12);
+
+  pinMode(LED_PIN, OUTPUT);  
+  digitalWrite(LED_PIN, LOW);
+
+  pinMode(HEATER_PIN,OUTPUT);
+  digitalWrite(HEATER_PIN,HIGH);
+  
+  
   tasks.every(1000,displayProbeStatus);
   tasks.every(500,blinkLed);
   delay(500);
@@ -48,5 +49,5 @@ void processSerial() {
 void loop() {
   processSerial();
   tasks.process();   
-  probe.update();      
+  probe.readTemperature();      
 }

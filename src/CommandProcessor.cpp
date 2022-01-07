@@ -20,8 +20,8 @@ void CommandProcessor::jumpToBootloader() {
     #pragma GCC diagnostic pop
 }
 
-void CommandProcessor::setTemperature( double temp ) {
-    output.printf("Setting temperature to %d\n", temp);
+void CommandProcessor::setTemperature( int temp ) {
+    output.printf("Target Temperature = %i °C\r\n", temp);
 }
 
 void CommandProcessor::processCommand() {
@@ -33,7 +33,8 @@ void CommandProcessor::processCommand() {
 
             case 105:
                 if ( GCode.HasWord('T') ) {
-                    setTemperature( GCode.GetWordValue('T') );
+                    
+                    setTemperature( (int)GCode.GetWordValue('T') );
                 }
                 break;
         }
@@ -42,12 +43,21 @@ void CommandProcessor::processCommand() {
 }
 
 void CommandProcessor::init() {
-    output.printf("ToasterControl ready\n");
+    
 } 
 
 void CommandProcessor::addByte(char inChar) {
+    // Output input as feedback to serial monitor users
+    // but suppress carriage return and line feed characters
+    // so the tmerinal prompt is displaed as expected.
+    if ( inChar != '\n' && inChar != '\r')
+        output.print(inChar);
+        
     if ( GCode.AddCharToLine(inChar)  ) {
         GCode.ParseLine();
+        output.printf("\r\n");
         processCommand();
+        output.printf("ToasterControl> ");
     }
+    
 }
