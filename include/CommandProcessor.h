@@ -23,8 +23,6 @@ class CommandProcessor {
         CommandProcessor(Stream& output);
 
     private:
-        void jumpToBootloader();
-        void setTemperature(int temp);
         void processCommand();
 
     public:
