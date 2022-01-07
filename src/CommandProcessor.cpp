@@ -3,19 +3,20 @@
 
 CommandProcessor::CommandProcessor(Stream& output)
     : output( output ),
-      m105( output, GCode ),
+      m104( output, GCode ),
       m997(GCode ) {
     commands = std::vector<AbstractGCodeCommand*> {
-         &m105, &m997 };
+         &m104, &m997 };
 }
 
 void CommandProcessor::processCommand() {
     for( auto command : commands) {
         if ( command->match() ) {
             command->execute();
-            break;
+            return;
         }
     }
+    output.printf("ERROR: Unable to execute command '%s'\r\n", GCode.line);
 }
 
 void CommandProcessor::init() {
@@ -33,7 +34,9 @@ void CommandProcessor::addByte(char inChar) {
     if ( GCode.AddCharToLine(inChar)  ) {
         GCode.ParseLine();
         output.printf("\r\n");
-        processCommand();
+        if ( strlen(GCode.line) > 0 ) {
+            processCommand();
+        }
         output.printf("ToasterControl> ");
     }
     

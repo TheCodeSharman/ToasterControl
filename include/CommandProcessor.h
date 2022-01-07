@@ -15,7 +15,7 @@ class CommandProcessor {
     GCodeParser GCode = GCodeParser();
     Stream& output;
 
-    M105 m105;
+    M104 m104;
     M997 m997;
     std::vector<AbstractGCodeCommand*> commands;
 

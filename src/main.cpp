@@ -34,7 +34,7 @@ void setup() {
   digitalWrite(HEATER_PIN,HIGH);
   
   
-  tasks.every(1000,displayProbeStatus);
+  //tasks.every(1000,displayProbeStatus);
   tasks.every(500,blinkLed);
   command.init();
 }

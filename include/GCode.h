@@ -17,7 +17,7 @@ class AbstractGCodeCommand {
         virtual void execute() = 0;
 };
 
-#include "gcodes/M105.h"
+#include "gcodes/M104.h"
 #include "gcodes/M997.h"
 
 #endif
