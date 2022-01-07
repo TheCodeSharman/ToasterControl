@@ -14,7 +14,6 @@ void M997::execute() {
 	SysTick->LOAD = 0;
 	SysTick->VAL = 0;
     __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
-    __set_MSP(*((uint32_t*) 0x00000000));
-    //__ASM volatile ("MSR msp, %0" : "r" (*((uint32_t*) 0x00000000)));
+    __ASM volatile ("movs r3, #0\nldr r3, [r3, #0]\nMSR msp, r3\n" : : : "r3" );
     ((void (*)(void)) *((uint32_t*) 0x00000004))();
 }
