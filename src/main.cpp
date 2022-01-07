@@ -24,6 +24,10 @@ void blinkLed() {
   isLedOn = !isLedOn;
 }
 
+void processPidControllers() {
+  oven.process();
+}
+
 void setup() {
   probe.setup();
   ovenChamber.setup();
@@ -31,6 +35,7 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);  
   digitalWrite(LED_PIN, LOW);
   tasks.every(500,blinkLed);
+  tasks.every(100,processPidControllers);
   command.init();
 }
 
@@ -42,6 +47,5 @@ void processSerial() {
 
 void loop() {
   processSerial();
-  oven.process();
   tasks.process();       
 }
