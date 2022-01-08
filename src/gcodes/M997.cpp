@@ -101,4 +101,5 @@ void M997::execute() {
 
     // Jump to the address stored at 0x00000004
     ((void (*)(void)) *((uint32_t*) 0x00000004))();
+    while(1);
 }
