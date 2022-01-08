@@ -45,7 +45,7 @@ void M997::execute() {
     // but for some reason GCC messes up this inline assembly using extended asm 
     // syntax with the stack address as an input operand.
     //
-    // The work around is to avoid using input register parameters and load the
+    // The work around is to avoid using input operand parameters and load the
     // new top of stack from address 0 directly in assembly:
     __ASM volatile ("movs r3, #0\nldr r3, [r3, #0]\nMSR msp, r3\n" : : : "r3" );
 
