@@ -28,7 +28,8 @@ bool M997::match() {
 
     (code derived from: 
         https://techoverflow.net/2021/10/17/implementing-stm32-dfu-bootloader-firmware-upgrade-in-marlin-using-m997/
-        https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/)
+        https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/
+        https://github.com/akospasztor/stm32-bootloader)
 
     See reference docs:
      https://www.st.com/resource/en/application_note/cd00167594-stm32-microcontroller-system-memory-boot-mode-stmicroelectronics.pdf
