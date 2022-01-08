@@ -138,3 +138,10 @@ Since this is a once off prototype I haven't fixed the model.
   This appears to be much more reliable than the BOOT0 + RESET pin
   combo. (Hypotheses: transient currents during startup mess with USB somehow?)
   (code mdofied from here: )
+
+  8/01/2022
+
+  - cleanup the the M997 jump to bootloader code
+  - discovered that the reason the upload freezes on the raspberry pi 4 is because
+    the dfu-util (tool-dfuutil 1.9.190708) in the platform-io script enters an infinite loop 
+    simply replaced it with a symbolic link to dfu-util_bin as a quick fix.
