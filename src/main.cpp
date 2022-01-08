@@ -14,7 +14,7 @@ OvenChamber ovenChamber(HEATER_PIN);
 PidController oven( probe,ovenChamber);
 Settings settings(Serial,probe,oven);
 
-CommandProcessor command(Serial,oven,settings);
+CommandProcessor command(Serial,oven,probe,settings);
 
 MultiTask tasks;
 

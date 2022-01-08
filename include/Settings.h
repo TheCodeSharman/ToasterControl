@@ -5,14 +5,14 @@
 #include "PidController.h"
 #include "KTypeProbe.h"
 
-static const int SETTINGS_VERSION = 0x1000001;
+static const int SETTINGS_VERSION = 0x1000002;
 static const uint16_t SETTINGS_VERSION_ADDRESS = 0;
 
 static const uint16_t SETTINGS_PID_CONTOLLER_ADDRESS = 4;
 static const PidCalibration SETTINGS_PID_DEFAULT_CALIBRATION = { 2, 5, 1, P_ON_E };
 
 static const uint16_t SETTINGS_K_TYPE_PROBE_ADDRESS = 20;
-static const KProbeCalibration SETTINGS_K_TYPE_PROBE_DEFAULT_CALIBRATION = { -3, 104, 2022, 2716 };
+static const KProbeCalibration SETTINGS_K_TYPE_PROBE_DEFAULT_CALIBRATION = { -3, 2022, 104, 2716 };
 
 /*
     Manages the settings for the machine in EEPROM

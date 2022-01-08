@@ -13,10 +13,11 @@
 class M105 : public AbstractGCodeCommand {
     private:
         PidController& oven;
+        KTypeProbe& probe;
         Stream& output;
     public:
-        M105(Stream& output, GCodeParser& GCode, PidController& oven) 
-            : output(output), AbstractGCodeCommand(GCode), oven(oven) {}
+        M105(Stream& output, GCodeParser& GCode, PidController& oven, KTypeProbe& probe) 
+            : output(output), AbstractGCodeCommand(GCode), oven(oven), probe(probe) {}
         virtual bool match();
         virtual void execute();
 };

@@ -21,6 +21,7 @@ class AbstractGCodeCommand {
 #include "gcodes/M105.h"
 #include "gcodes/M997.h"
 #include "gcodes/M301.h"
+#include "gcodes/M306.h"
 #include "gcodes/M500_503.h"
 
 #endif
