@@ -64,6 +64,22 @@ bool M997::match() {
         - loads the stack pointer from 0x00000000
         - jumps to the address stored at 0x00000004
 */
+
+/*
+    The following code is used to set the stack pointer:
+
+    __set_MSP(*((uint32_t*) 0x00000000));
+
+    But this dereferences a NULL pointer which gcc considers undefined behaviour
+    and will insert an undef instruction trap instead due to the optimiser option
+    -fisolate-erroneous-paths-dereference.
+    
+    (see https://bugs.launchpad.net/gcc-arm-embedded/+bug/1479823)
+
+    So to avoid this we disable this optimizer option just for the scope of
+    this function.
+*/
+__attribute__((optimize("no-isolate-erroneous-paths-dereference"))) 
 void M997::execute() {
     
     // Deinitialize the STM32 - resets PLL and disables interrupts
@@ -76,22 +92,12 @@ void M997::execute() {
 	SysTick->LOAD = 0;
 	SysTick->VAL = 0;
 
-    // System bootloader is in internal ROM this remaps the
-    // memory to page in the ROM.
+    // Remap system bootloader to page 0x00000000
     __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
 
-    // We want to do the following to load the stack pointer from 0x00000000:
-    //
-    // __set_MSP(*((uint32_t*) 0x00000000));
-    //
-    // but this is dereferencing a NULL pointer and GCC considers this undefined behaviour
-    // and inserts an undef instruction trap instead.
-    //
-    // (see https://bugs.launchpad.net/gcc-arm-embedded/+bug/1479823)
-    //
-    // The work around is load the new top of stack from address 0 directly in assembly:
-    __ASM volatile ("movs r3, #0\nldr r3, [r3, #0]\nMSR msp, r3\n" : : : "r3" );
+    // Load the stack pointer from the address stored at 0x00000000
+    __set_MSP(*((uint32_t*) 0x00000000));
 
-    // Jump to the address at 0x00000004
+    // Jump to the address stored at 0x00000004
     ((void (*)(void)) *((uint32_t*) 0x00000004))();
 }
