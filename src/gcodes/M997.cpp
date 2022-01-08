@@ -80,6 +80,7 @@ bool M997::match() {
     this function.
 */
 __attribute__((optimize("no-isolate-erroneous-paths-dereference"))) 
+__attribute__ ((noreturn))
 void M997::execute() {
     
     // Deinitialize the STM32 - resets PLL and disables interrupts
