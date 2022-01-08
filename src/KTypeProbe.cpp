@@ -1,10 +1,11 @@
 #include "KTypeProbe.h"
 
 
-KTypeProbe::KTypeProbe( const uint8_t probePin, KProbeCalibration& calibration )
-    : probePin(probePin), calibration(calibration)
+KTypeProbe::KTypeProbe( const uint8_t probePin )
+    : probePin(probePin)
 {
-
+    KProbeCalibration defaultCal;
+    setProbeCalibration(defaultCal);
 }
 
 void KTypeProbe::setup() {

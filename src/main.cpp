@@ -9,13 +9,12 @@ const uint8_t LED_PIN = PC13;
 const uint8_t K_PROBE_PIN = A2;
 const uint8_t HEATER_PIN = PA15;
 
-PidCalibration PID_CAL_DEFAULT = { 2, 5, 1, P_ON_E };
-KProbeCalibration K_PROBE_CAL_DEFAULT = { -3, 104, 2022, 2716 };
-KTypeProbe probe(K_PROBE_PIN,K_PROBE_CAL_DEFAULT);
+KTypeProbe probe(K_PROBE_PIN);
 OvenChamber ovenChamber(HEATER_PIN);
-PidController oven( probe,ovenChamber,PID_CAL_DEFAULT);
+PidController oven( probe,ovenChamber);
+Settings settings(Serial,probe,oven);
 
-CommandProcessor command(Serial,oven);
+CommandProcessor command(Serial,oven,settings);
 
 MultiTask tasks;
 
@@ -30,6 +29,10 @@ void processPidControllers() {
 }
 
 void setup() {
+  // Firstly load settings from EEPROM (emulated in flash here)
+  // If the settings don't exist then factory settings will be stored.
+  settings.loadSettings();
+
   probe.setup();
   ovenChamber.setup();
 

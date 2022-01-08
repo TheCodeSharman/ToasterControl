@@ -52,20 +52,23 @@ typedef int32_t milliCelcius_t;
 */
 
 typedef struct {
-  int32_t tempOffsetA;
-  int32_t tempOffsetB;
-  uint32_t adcA;
-  uint32_t adcB;
+  int32_t tempOffsetA = -3;
+  uint32_t adcA = 2022;
+  int32_t tempOffsetB = 104;
+  uint32_t adcB = 2716;
 } KProbeCalibration;
+
+
 
 class KTypeProbe : public Sensor
 {
 public:
-  KTypeProbe( const uint8_t probePin, KProbeCalibration& calibration );
+  
+  KTypeProbe( const uint8_t probePin );
 
 private:
   uint32_t overSampleRead(int N, uint32_t pin);
-  KProbeCalibration& calibration;
+  KProbeCalibration calibration;
   milliCelcius_t coldJunction;
   uint32_t probeAdc;
   milliCelcius_t probeOffset;
@@ -78,8 +81,9 @@ public:
   uint32_t        getProbeAdc() { return probeAdc; }
   milliCelcius_t  getProbeOffset() { return probeOffset; }
   milliCelcius_t  getTemperature() { return probeOffset + coldJunction; }
+  KProbeCalibration& getProbeCalibration() { return calibration; }
 
-  void setProbeCalibration(KProbeCalibration& calibration) { this->calibration = calibration; }
+  void setProbeCalibration(const KProbeCalibration& calibration) { this->calibration = calibration; }
 
   virtual milliCelcius_t readColdJunction();
   virtual uint32_t readProbeAdc();

@@ -5,8 +5,7 @@
 #include "PidController.h"
 
 /*
-    Enters the system bootloader ready for firmware update.
-    M997 is the code Marlin uses for the same.
+    Sets the PID parameters of the heater
 */
 class M301 : public AbstractGCodeCommand {
     private:

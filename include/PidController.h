@@ -8,15 +8,15 @@
 
 
 typedef struct {
-  double Kp;
-  double Ki;
-  double Kd;
-  int P_MODE;
+  float Kp = 2;
+  float Ki = 5;
+  float Kd = 1;
+  int P_MODE = P_ON_E;
 } PidCalibration;
 
 class PidController {
     private:
-        PidCalibration& calibration;
+        PidCalibration calibration;
         Sensor& input;
         ControlledDevice& output;
 
@@ -33,10 +33,10 @@ class PidController {
         PidCalibration& getPidCalibration() { return calibration; }
 
         void setSetPoint( double setPoint ) { this->setPoint = setPoint; }
-        void setPidCalibration( PidCalibration& calibration );
+        void setPidCalibration( const PidCalibration& calibration );
 
 
-        PidController( Sensor& input, ControlledDevice& output, PidCalibration& calibration );
+        PidController( Sensor& input, ControlledDevice& output );
         void process();
         void start( double setPoint );
         void stop();

@@ -1,8 +1,10 @@
 #include "PidController.h"
 
-PidController::PidController( Sensor& input, ControlledDevice& output, PidCalibration& calibration )
-        : input( input ), output( output), calibration(calibration),
-          pid(&inputValue,&outputValue,&setPoint, calibration.Kp, calibration.Ki, calibration.Kd, calibration.P_MODE, DIRECT ) {
+PidController::PidController( Sensor& input, ControlledDevice& output )
+        : input( input ), output( output), 
+          pid(&inputValue,&outputValue,&setPoint, 0, 0, 0, P_ON_E, DIRECT ) {
+    PidCalibration defaultCal;
+    setPidCalibration(defaultCal);
 }
 
 void PidController::process() {
@@ -13,7 +15,7 @@ void PidController::process() {
     }
 }
 
-void PidController::setPidCalibration( PidCalibration& calibration ) {
+void PidController::setPidCalibration( const PidCalibration& calibration ) {
     this->calibration = calibration;
     pid.SetTunings(
         calibration.Kp,
