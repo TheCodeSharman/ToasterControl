@@ -26,6 +26,10 @@ bool M997::match() {
     Software activation of system bootloader procedure
     ==================================================
 
+    (code derived from: 
+        https://techoverflow.net/2021/10/17/implementing-stm32-dfu-bootloader-firmware-upgrade-in-marlin-using-m997/
+        https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/)
+
     See reference docs:
      https://www.st.com/resource/en/application_note/cd00167594-stm32-microcontroller-system-memory-boot-mode-stmicroelectronics.pdf
 
