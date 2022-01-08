@@ -84,15 +84,12 @@ void M997::execute() {
     //
     // __set_MSP(*((uint32_t*) 0x00000000));
     //
-    // __set_MSP() is supposed to inline the MSR instruction as in:
+    // but this is dereferencing a NULL pointer and GCC considers this undefined behaviour
+    // and inserts an undef instruction trap instead.
     //
-    //    __ASM volatile ("MSR msp, %0" : : "r" (topOfStack) : );
+    // (see https://bugs.launchpad.net/gcc-arm-embedded/+bug/1479823)
     //
-    // but for some reason GCC messes up this inline assembly using extended asm 
-    // syntax with the stack address as an input operand.
-    //
-    // The work around is to avoid using input operand parameters and load the
-    // new top of stack from address 0 directly in assembly:
+    // The work around is load the new top of stack from address 0 directly in assembly:
     __ASM volatile ("movs r3, #0\nldr r3, [r3, #0]\nMSR msp, r3\n" : : : "r3" );
 
     // Jump to the address at 0x00000004
