@@ -7,7 +7,26 @@ bool M997::match() {
     return false;
 }
 
-/* See reference docs:
+/* 
+    Activates the system bootloader via software, avoiding the need to physically
+    pressed the BOOT0 button to update the firmware.
+
+    Also there seems to be an issue with the bootloader not always establishing the correct
+    USB interface clocks from a physical reset. Activating by software is more reliable.
+
+    On page 56 of the boot mode application note (see reference below):
+
+    "At bootloader startup, the HSITRIM value is set to 0 (in HSITRIM bits on RCC_CR register)
+    instead of default value (16), as a consequence a deviation is generated in crystal measurement.
+    For better results, use the smallest supported crystal value (i.e. 4 MHz)."
+
+    So I'm assuming this explains why software activation is more reliable: HSITRIM will be correctly
+    set at the point this code is executed. (The black pill I'm using uses a 25Mhz crystal)
+
+    Software activation of system bootloader procedure
+    ==================================================
+
+    See reference docs:
      https://www.st.com/resource/en/application_note/cd00167594-stm32-microcontroller-system-memory-boot-mode-stmicroelectronics.pdf
 
     "In addition to patterns described above, user can execute bootloader by performing a jump
