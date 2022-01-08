@@ -1,10 +1,8 @@
 #include "PidController.h"
 
-PidController::PidController( Sensor& input, ControlledDevice& output,
-    double Kp, double Ki, double Kd )
-        : input( input ), output( output), Kp(Kp), Ki(Ki), Kd(Kd),
-          pid(&inputValue,&outputValue,&setPoint, Kp, Ki, Kd, DIRECT) {
-    
+PidController::PidController( Sensor& input, ControlledDevice& output, PidCalibration& calibration )
+        : input( input ), output( output), calibration(calibration),
+          pid(&inputValue,&outputValue,&setPoint, calibration.Kp, calibration.Ki, calibration.Kd, calibration.P_MODE, DIRECT ) {
 }
 
 void PidController::process() {
@@ -13,6 +11,16 @@ void PidController::process() {
     if ( pid.Compute() ) {
         output.setValue(outputValue);
     }
+}
+
+void PidController::setPidCalibration( PidCalibration& calibration ) {
+    this->calibration = calibration;
+    pid.SetTunings(
+        calibration.Kp,
+        calibration.Ki,
+        calibration.Kd,
+        calibration.P_MODE
+    );
 }
 
 void PidController::start( double setPoint ) {

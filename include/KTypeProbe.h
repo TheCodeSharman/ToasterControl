@@ -28,12 +28,6 @@
       close to linear in the region -10°C to 400°C so this is reasonable for a
       rough reading.
       
-  To use, instantiate the template with the required parameters to specify the 
-  calibration constants. It is also possible to override the functions called to read
-  the cold junction and the hot junction - this is implemented using default template
-  parameters in order to avoid requiring inheritance, since no polymorhism is needed.
-
-
 */
 
 #ifndef ADC_VREF
@@ -58,10 +52,10 @@ typedef int32_t milliCelcius_t;
 */
 
 typedef struct {
-  const int32_t tempOffsetA;
-  const int32_t tempOffsetB;
-  const uint32_t adcA;
-  const uint32_t adcB;
+  int32_t tempOffsetA;
+  int32_t tempOffsetB;
+  uint32_t adcA;
+  uint32_t adcB;
 } KProbeCalibration;
 
 class KTypeProbe : public Sensor
@@ -71,7 +65,7 @@ public:
 
 private:
   uint32_t overSampleRead(int N, uint32_t pin);
-  const KProbeCalibration& calibration;
+  KProbeCalibration& calibration;
   milliCelcius_t coldJunction;
   uint32_t probeAdc;
   milliCelcius_t probeOffset;
@@ -84,6 +78,8 @@ public:
   uint32_t        getProbeAdc() { return probeAdc; }
   milliCelcius_t  getProbeOffset() { return probeOffset; }
   milliCelcius_t  getTemperature() { return probeOffset + coldJunction; }
+
+  void setProbeCalibration(KProbeCalibration& calibration) { this->calibration = calibration; }
 
   virtual milliCelcius_t readColdJunction();
   virtual uint32_t readProbeAdc();

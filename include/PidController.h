@@ -6,15 +6,23 @@
 #include "Sensor.h"
 #include "ControlledDevice.h"
 
+
+typedef struct {
+  double Kp;
+  double Ki;
+  double Kd;
+  int P_MODE;
+} PidCalibration;
+
 class PidController {
     private:
+        PidCalibration& calibration;
         Sensor& input;
         ControlledDevice& output;
 
         double inputValue;
         double outputValue;
         double setPoint;
-        double Kp, Ki, Kd;
 
         PID pid;
     
@@ -24,8 +32,9 @@ class PidController {
         double getOutputValue() { return outputValue; }
 
         void setSetPoint( double setPoint ) { this->setPoint = setPoint; }
+        void setPidCalibration( PidCalibration& calibration );
 
-        PidController( Sensor& input, ControlledDevice& output, double Kp, double Ki, double Kd );
+        PidController( Sensor& input, ControlledDevice& output, PidCalibration& calibration );
         void process();
         void start( double setPoint );
         void stop();

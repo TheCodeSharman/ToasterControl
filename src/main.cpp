@@ -9,10 +9,11 @@ const uint8_t LED_PIN = PC13;
 const uint8_t K_PROBE_PIN = A2;
 const uint8_t HEATER_PIN = PA15;
 
-KProbeCalibration K_PROBE_CAL = { -3, 104, 2022, 2716 };
-KTypeProbe probe(K_PROBE_PIN,K_PROBE_CAL);
+PidCalibration PID_CAL_DEFAULT = { 2, 5, 1, P_ON_E };
+KProbeCalibration K_PROBE_CAL_DEFAULT = { -3, 104, 2022, 2716 };
+KTypeProbe probe(K_PROBE_PIN,K_PROBE_CAL_DEFAULT);
 OvenChamber ovenChamber(HEATER_PIN);
-PidController oven( probe, ovenChamber, 2, 5, 1 );
+PidController oven( probe,ovenChamber,PID_CAL_DEFAULT);
 
 CommandProcessor command(Serial,oven);
 
