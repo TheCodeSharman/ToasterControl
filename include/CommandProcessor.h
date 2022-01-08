@@ -18,6 +18,7 @@ class CommandProcessor {
     M105 m105;
     M104 m104;
     M997 m997;
+    M301 m301;
     std::vector<AbstractGCodeCommand*> commands;
 
     public:

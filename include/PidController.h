@@ -30,9 +30,11 @@ class PidController {
         double getInput() { return inputValue; }
         double getSetPoint() { return setPoint; }
         double getOutputValue() { return outputValue; }
+        PidCalibration& getPidCalibration() { return calibration; }
 
         void setSetPoint( double setPoint ) { this->setPoint = setPoint; }
         void setPidCalibration( PidCalibration& calibration );
+
 
         PidController( Sensor& input, ControlledDevice& output, PidCalibration& calibration );
         void process();

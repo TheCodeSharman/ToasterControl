@@ -5,9 +5,10 @@ CommandProcessor::CommandProcessor(Stream& output, PidController& oven)
     : output( output ),
       m104( output, GCode, oven ),
       m105( output, GCode, oven ),
+      m301( output, GCode, oven ),
       m997( GCode ) {
     commands = std::vector<AbstractGCodeCommand*> {
-         &m104, &m105, &m997 };
+         &m104, &m105, &m997, &m301 };
 }
 
 void CommandProcessor::processCommand() {
@@ -21,7 +22,6 @@ void CommandProcessor::processCommand() {
 }
 
 void CommandProcessor::init() {
-    delay(1000);
     output.printf("ToasterControl> ");
 } 
 
