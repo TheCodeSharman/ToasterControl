@@ -8,9 +8,10 @@ bool M105::match() {
 }
 
 void M105::execute() {
-    output.printf("ok C: %0.0f (%0.0f) ; coldJunction = %i adc = %i\r\n", 
+    output.printf("ok C: %0.0f (%0.0f) ; coldJunction = %i adc = %i isTuning=%i\r\n", 
         oven.getInput(), 
         oven.getSetPoint(),
         probe.getColdJunction()/1000,
-        probe.getProbeAdc() );
+        probe.getProbeAdc(),
+        oven.getIsTuning() );
 }

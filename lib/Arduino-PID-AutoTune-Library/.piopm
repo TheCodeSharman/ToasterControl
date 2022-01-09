@@ -1,0 +1,1 @@
+{"type": "library", "name": "Arduino-PID-AutoTune-Library", "version": "0.0.0+20220109180135.sha.7c03cf3", "spec": {"owner": null, "id": null, "name": "Arduino-PID-AutoTune-Library", "requirements": null, "url": "git+https://github.com/br3ttb/Arduino-PID-AutoTune-Library.git"}}
