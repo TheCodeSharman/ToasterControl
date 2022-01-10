@@ -14,9 +14,8 @@ OvenChamber ovenChamber(HEATER_PIN);
 PidController oven( probe,ovenChamber);
 Settings settings(Serial,probe,oven);
 
-CommandProcessor command(Serial,oven,probe,settings);
-
 MultiTask tasks;
+CommandProcessor command(Serial,oven,probe,settings,tasks);
 
 void blinkLed() {
   static bool isLedOn = false;
@@ -27,9 +26,6 @@ void blinkLed() {
 void processPidControllers() {
   oven.process();
   ovenChamber.process();
-}
-void reportDebug() {
-  Serial.printf("input = %f output = %f\r\n", oven.getInput(), oven.getOutput() );
 }
 
 void setup() {
@@ -45,7 +41,6 @@ void setup() {
   digitalWrite(LED_PIN, LOW);
   tasks.every(500,blinkLed);
   tasks.every(10,processPidControllers);
-  //tasks.every(1000,reportDebug);
   command.init();
 }
 

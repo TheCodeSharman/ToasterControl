@@ -26,7 +26,13 @@ uint32_t KTypeProbe::overSampleRead(int N, uint32_t pin) {
 }
 
 milliCelcius_t KTypeProbe::readColdJunction(){
-  return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, overSampleRead(10, ATEMP), LL_ADC_RESOLUTION_12B) * 1000;
+    // Calculate internal temperature in millidegrees, this is unrealistic precision
+    // but we want to avoid rounding errors in subsequent calculations.
+    //
+    // We don't use __LL_ADC_CALC_TEMPERATURE() because it is integer precions degrees.
+    uint32_t internalTempAdcOffset = overSampleRead(10, ATEMP) - *TEMPSENSOR_CAL1_ADDR;
+    return  (internalTempAdcOffset * (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP)*1000)
+            /(*TEMPSENSOR_CAL2_ADDR - *TEMPSENSOR_CAL1_ADDR) + TEMPSENSOR_CAL1_TEMP*1000;
 }
 
 uint32_t KTypeProbe::readProbeAdc(){
@@ -36,8 +42,8 @@ uint32_t KTypeProbe::readProbeAdc(){
 milliCelcius_t KTypeProbe::readTemperature() {
     coldJunction = readColdJunction();
     probeAdc = readProbeAdc();
-    probeOffset = calibration.tempOffsetA * 1000 +
-                  (calibration.tempOffsetB - calibration.tempOffsetA) * 1000 *
+    probeOffset = calibration.tempOffsetA * 1000.0 +
+                  (calibration.tempOffsetB - calibration.tempOffsetA) * 1000.0 *
                       (((int32_t)probeAdc) - (int32_t)calibration.adcA) / ((int32_t)calibration.adcB - (int32_t)calibration.adcA);
     return getTemperature();
 }

@@ -2,17 +2,17 @@
 
 
 CommandProcessor::CommandProcessor(Stream& output, 
-    PidController& oven, KTypeProbe& probe, Settings& settings)
+    PidController& oven, KTypeProbe& probe, Settings& settings, MultiTask& multitask)
     : output(output),
+      multitask(multitask),
       m104(output,GCode,oven),
-      m105(output,GCode,oven,probe),
+      m105_155(output,GCode,oven,probe,multitask),
       m301(output,GCode,oven),
-      m303(output,GCode,oven),
       m306(output,GCode,probe),
       m500_503(output,GCode,settings),
       m997(GCode) {
     commands = std::vector<AbstractGCodeCommand*> {
-         &m104, &m105, &m997, &m301, &m303, &m306, &m500_503 };
+         &m104, &m105_155, &m997, &m301, &m306, &m500_503 };
 }
 
 void CommandProcessor::processCommand() {

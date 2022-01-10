@@ -15,11 +15,13 @@ void OvenChamber::process() {
     int elapsed = millis() - windowStartTime;
     
     // move to next window if outside current window
-    if ( elapsed > windowSize )
+    if ( elapsed > windowSize ) {
         windowStartTime = millis();
+        elapsed = windowSize;
+    }
 
     // if we are in the ON part of the cycle turn on the heater
-    if ( outputValue > elapsed ) {
+    if ( outputValue >= elapsed ) {
         digitalWrite(chamberPin, HIGH);
     } else {
         digitalWrite(chamberPin, LOW);

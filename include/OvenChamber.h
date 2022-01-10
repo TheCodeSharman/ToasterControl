@@ -8,7 +8,7 @@
 class OvenChamber : public ControlledDevice {
     private:
         const uint8_t chamberPin;
-        const int windowSize = 5000;
+        const int windowSize = 500;
         double outputValue;
         unsigned long windowStartTime;
 

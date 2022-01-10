@@ -52,9 +52,9 @@ typedef int32_t milliCelcius_t;
 */
 
 typedef struct {
-  int32_t tempOffsetA = -3;
+  float tempOffsetA = -3;
   uint32_t adcA = 2022;
-  int32_t tempOffsetB = 104;
+  float tempOffsetB = 104;
   uint32_t adcB = 2716;
 } KProbeCalibration;
 

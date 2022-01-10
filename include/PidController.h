@@ -2,11 +2,9 @@
 #define PID_CONTROLLER_H
 
 #include <PID_v1.h>
-#include <PID_AutoTune_v0.h>
 
 #include "Sensor.h"
 #include "ControlledDevice.h"
-
 
 typedef struct {
   float Kp = 2;
@@ -14,6 +12,20 @@ typedef struct {
   float Kd = 1;
   int P_MODE = P_ON_E;
 } PidCalibration;
+
+/*  PID Controller:
+    "An empirical procedure that works pretty well is the following:
+        (a) with I and D terms turned off, increase the P gain until 
+            the system begins to oscillate, then back off a bit; the
+            sytem should now exhibit overshoot and ringing, but not
+            sustained oscillation, in response to a step change in 
+            setpoint;
+        (b) now add D gain until the response to a step is critically 
+            damped;
+        (c) finally, while watching the error signal itself, add I gain
+            to achieve minimum settling time."
+    (Art of Electronics 3rd edition page 1074 para 15.6.2)
+*/
 
 class PidController {
     private:
@@ -25,15 +37,13 @@ class PidController {
         double outputValue;
         double setPoint;
 
-        bool isTuning = false;
-
         PID pid;
-        PID_ATune pidAutoTune;
     
     public:
         double getInput() { return inputValue; }
         double getSetPoint() { return setPoint; }
         double getOutput() { return outputValue; }
+        double getError() { return setPoint - inputValue; }
         PidCalibration& getPidCalibration() { return calibration; }
 
         void setOutputLimits( double min, double max) {
@@ -44,10 +54,6 @@ class PidController {
 
 
         PidController( Sensor& input, ControlledDevice& output );
-
-        void startAutoTune( double setPoint );
-        void cancelAutoTune();
-        bool getIsTuning() { return isTuning; }
 
         void process();
         void start( double setPoint );

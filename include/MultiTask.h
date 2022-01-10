@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <vector>
+#include <functional>
 
 /*
     Keeps track of multiple functions to be called at specified intervals.
@@ -25,29 +26,49 @@
 */
 class MultiTask {
   uint32_t current;
-  typedef struct  {
-    void (*callback)();
-    uint32_t nextCall;
-    uint32_t period;
-  } CallbackFunction;
-
-  std::vector<CallbackFunction> callbacks;
 
   public:
+    class CallbackFunction {
+      friend class MultiTask;
+
+      private:
+        CallbackFunction( std::function<void()> callback, uint32_t nextCall, uint32_t period )
+          : callback(callback), nextCall(nextCall), period(period)  {}
+
+        std::function<void()> callback;
+        uint32_t nextCall;
+        uint32_t period;
+      public:
+        uint32_t getPeriod() { return period; }
+        void setPeriod( uint32_t period) { this->period = period; }
+
+    };
+
+  private:
+    std::vector<CallbackFunction*> callbacks;
+
+  public:
+
+    ~MultiTask() {
+      for( CallbackFunction* cb : callbacks ) {
+        delete cb;
+      }
+    }
     /* Add a call back function to be called every time the clock ticks over the 
        specified delay in milliseconds */
-    void every(uint32_t delay, void (*callback)()) {
-      CallbackFunction cb = { callback, 0, delay };
+    CallbackFunction* every(uint32_t delay, std::function<void()> callback) {
+      CallbackFunction* cb = new CallbackFunction(callback, 0, delay);
       callbacks.push_back(cb);
+      return cb;
     }
 
     /* Needs to be called as often as possible */
     void process() {
       current = millis();
-      for(auto &cb : callbacks ) {
-        if ( cb.nextCall < current ) {
-          cb.nextCall = current+cb.period;
-          cb.callback();
+      for(CallbackFunction* cb : callbacks ) {
+        if ( cb->nextCall < current && cb->period > 0 ) {
+          cb->nextCall = current+cb->period;
+          cb->callback();
         }
       }
     }
