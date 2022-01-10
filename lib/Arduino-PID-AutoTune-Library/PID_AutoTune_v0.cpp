@@ -30,11 +30,11 @@ void PID_ATune::Cancel()
 int PID_ATune::Runtime()
 {
 	justevaled=false;
-	if(peakCount>9 && running)
+	if(peakCount>2 && running)
 	{
 		running = false;
 		FinishUp();
-		return 1;
+		return -1;
 	}
 	unsigned long now = millis();
 	
