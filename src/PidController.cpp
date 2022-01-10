@@ -33,6 +33,6 @@ void PidController::start( double setPoint ) {
 
 void PidController::stop() {
     pid.SetMode(MANUAL);
-    setSetPoint(setPoint);
-    output.setValue(0);
+    setSetPoint(0);
+    outputValue = 0;
 }

@@ -25,7 +25,7 @@ void blinkLed() {
 
 void processPidControllers() {
   oven.process();
-  ovenChamber.process();
+  
 }
 
 void setup() {
@@ -52,5 +52,6 @@ void processSerial() {
 
 void loop() {
   processSerial();
+  ovenChamber.process(); // operates at microseconds not milliseconds
   tasks.process();       
 }
