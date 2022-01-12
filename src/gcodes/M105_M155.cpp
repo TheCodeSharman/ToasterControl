@@ -25,13 +25,13 @@ void M105_M155::execute() {
             reportingCallback->setPeriod(period);
        }
    } else {
+        output.printf("ok ");
         reportTemperatures();
    }
-   output.printf("ok\r\n");
 }
 
 void M105_M155::reportTemperatures() {
- output.printf("T: %0.2f (%0.0f) ; coldJunction = %0.2f adc = %i input = %0.2f output = %0.2f error = %0.2f P=%0.2f I=%0.2f D=%0.4f\r\n", 
+ output.printf("T:%0.2f/%0.2f ; coldJunction = %0.2f adc = %i input = %0.2f output = %0.2f error = %0.2f P=%0.2f I=%0.2f D=%0.4f\r\n", 
         probe.readSensor(), 
         oven.getSetPoint(),
         probe.getColdJunction()/1000.0,
@@ -42,6 +42,5 @@ void M105_M155::reportTemperatures() {
         oven.getP(),
         oven.getI(),
         oven.getD()
-
  );
 }

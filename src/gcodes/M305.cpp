@@ -19,8 +19,8 @@ void M305::execute() {
         calibration.adcB = (int)GCode.GetWordValue('D');
     probe.setProbeCalibration(calibration);
 
-    output.printf("// Oven chamber K Type probe\r\n");
-    output.printf("//   M305 A%0.2f B%i C%0.2f D%i\r\n",
+    output.printf("; Oven chamber K Type probe\r\n");
+    output.printf(";   M305 A%0.2f B%i C%0.2f D%i\r\n",
             calibration.tempOffsetA,
             calibration.adcA,
             calibration.tempOffsetB,
