@@ -46,6 +46,9 @@ class PidController {
 
         double error;
         double lastError;
+        double slopes[10];
+        int slopePtr = 0;
+        double slope;
 
         MultiTask::CallbackFunction *processLoop;
 
@@ -59,6 +62,7 @@ class PidController {
         double getOutput() { return outputValue; }
     
         double getError() { return error; }
+        double getSlope() { return slope; }
 
         double getP() { return P; }
         double getI() { return I; }

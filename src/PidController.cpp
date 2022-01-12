@@ -15,6 +15,11 @@ void PidController::resetParameters() {
     D = 0;
     error = 0;
     lastError = 0;
+    slopePtr = 0;
+    for( auto &s : slopes ) {
+        s = 0.0;
+    }
+    slope = 0;
 }
 
 void PidController::process() {
@@ -22,9 +27,20 @@ void PidController::process() {
     inputValue = input.readSensor();
     error = setPoint - inputValue;
 
+    // use the mean of the last 10 
+    slope = 0.0;
+    for( auto &s : slopes )
+      slope += s;
+    slope = slope / 10;
+    
+
     P = calibration.Kp * error;
     I = I + calibration.Ki * error;
-    D = calibration.Kd * (error - lastError);
+    D = calibration.Kd * slope;
+
+    slopePtr ++;
+    slopePtr = slopePtr%10;
+    slopes[slopePtr] = error - lastError;
     lastError = error;
 
     outputValue = P + I + D;
@@ -40,7 +56,7 @@ void PidController::setPidCalibration( const PidCalibration& calibration ) {
 void PidController::start( double setPoint ) {
     setSetPoint(setPoint);
     if ( processLoop == NULL ) {
-        processLoop = tasks.every(10,std::bind(&PidController::process,this));
+        processLoop = tasks.every(1000,std::bind(&PidController::process,this));
     } else {
         processLoop->setPeriod(10);
     }
