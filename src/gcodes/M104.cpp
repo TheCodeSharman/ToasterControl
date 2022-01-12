@@ -16,4 +16,5 @@ void M104::execute() {
     } else {
         oven.stop();
     }
+    output.printf("ok\r\n");
 }

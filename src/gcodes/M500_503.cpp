@@ -13,26 +13,27 @@ void M500_503::execute() {
     switch(c) {
         case 500: 
             settings.saveSettings();
-            output.printf("; Settings saved\r\n");
+            output.printf("// Settings saved\r\n");
             break;
 
         case 501:
             settings.loadSettings();
-            output.printf("; Settings loaded\r\n");
+            output.printf("// Settings loaded\r\n");
             break;
 
         case 502:
-            output.printf("; Settings reset\r\n");
+            output.printf("// Settings reset\r\n");
             settings.resetSettings();
             break;
     }
 
     PidCalibration& pidCal = settings.getPidCalibration();
     KProbeCalibration& probeCal = settings.getProbeCalibration();
-    output.printf("; Toaster oven settings:\r\n");
-    output.printf(";   PidController: Kp = %0.2f Ki = %0.2f Kd = %0.2f p_on = %i\r\n", 
+    output.printf("// Toaster oven settings:\r\n");
+    output.printf("//   PidController: Kp = %0.2f Ki = %0.2f Kd = %0.2f p_on = %i\r\n", 
         pidCal.Kp, pidCal.Ki, pidCal.Kd, pidCal.P_MODE);
-    output.printf(";   KTypeProbe: A: (temp:%0.2f, adc:%i) B: (temp:%0.2f, adc:%i)\r\n",
+    output.printf("//   KTypeProbe: A: (temp:%0.2f, adc:%i) B: (temp:%0.2f, adc:%i)\r\n",
         probeCal.tempOffsetA, probeCal.adcA,
         probeCal.tempOffsetB, probeCal.adcB);
+    output.printf("ok\r\n");
 }

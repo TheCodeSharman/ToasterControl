@@ -1,13 +1,13 @@
-#include "gcodes/M306.h"
+#include "gcodes/M305.h"
 
-bool M306::match() {
+bool M305::match() {
     if ( GCode.HasWord('M') ) {
        return ( (int)GCode.GetWordValue('M') == 306 );
     }
     return false;
 }
 
-void M306::execute() {
+void M305::execute() {
     KProbeCalibration& calibration = probe.getProbeCalibration();
     if ( GCode.HasWord('A'))
         calibration.tempOffsetA = GCode.GetWordValue('A');
@@ -19,10 +19,11 @@ void M306::execute() {
         calibration.adcB = (int)GCode.GetWordValue('D');
     probe.setProbeCalibration(calibration);
 
-    output.printf("; Oven chamber K Type probe\r\n");
-    output.printf("   M306 A%0.2f B%i C%0.2f D%i\r\n",
+    output.printf("// Oven chamber K Type probe\r\n");
+    output.printf("//   M305 A%0.2f B%i C%0.2f D%i\r\n",
             calibration.tempOffsetA,
             calibration.adcA,
             calibration.tempOffsetB,
             calibration.adcB );
+    output.printf("ok\r\n");
 }
