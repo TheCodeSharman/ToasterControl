@@ -29,10 +29,13 @@ milliCelcius_t KTypeProbe::readColdJunction(){
     // Calculate internal temperature in millidegrees, this is unrealistic precision
     // but we want to avoid rounding errors in subsequent calculations.
     //
-    // We don't use __LL_ADC_CALC_TEMPERATURE() because it is integer precions degrees.
-    uint32_t internalTempAdcOffset = overSampleRead(100, ATEMP) - *TEMPSENSOR_CAL1_ADDR;
-    return  (internalTempAdcOffset * (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP)*1000)
-            /(*TEMPSENSOR_CAL2_ADDR - *TEMPSENSOR_CAL1_ADDR) + TEMPSENSOR_CAL1_TEMP*1000;
+    // We don't use __LL_ADC_CALC_TEMPERATURE because it is integer precions degrees.
+    //return __LL_ADC_CALC_TEMPERATURE(ADC_VREF, overSampleRead(100, ATEMP), LL_ADC_RESOLUTION_12B) * 1000;
+    
+    return  ( ( ( (overSampleRead(100, ATEMP)  - *TEMPSENSOR_CAL1_ADDR)
+            * (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP) * 1000 )
+            /(*TEMPSENSOR_CAL2_ADDR - *TEMPSENSOR_CAL1_ADDR) )
+            + TEMPSENSOR_CAL1_TEMP * 1000 );
 }
 
 uint32_t KTypeProbe::readProbeAdc(){
