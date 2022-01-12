@@ -1,16 +1,14 @@
 #ifndef PID_CONTROLLER_H
 #define PID_CONTROLLER_H
 
-#include <PID_v1.h>
-
 #include "Sensor.h"
 #include "ControlledDevice.h"
+#include "MultiTask.h"
 
 typedef struct {
   float Kp = 2;
   float Ki = 5;
   float Kd = 1;
-  int P_MODE = P_ON_E;
 } PidCalibration;
 
 /*  PID Controller:
@@ -32,28 +30,52 @@ class PidController {
         PidCalibration calibration;
         Sensor& input;
         ControlledDevice& output;
+        MultiTask& tasks;
+
+        double outputMin;
+        double outputMax;
 
         double inputValue;
         double outputValue;
+
         double setPoint;
 
-        PID pid;
+        double I;
+        double P;
+        double D;
+
+        double error;
+        double lastError;
+
+        MultiTask::CallbackFunction *processLoop;
+
+        void resetParameters();
     
     public:
+        PidController( Sensor& input, ControlledDevice& output, MultiTask& tasks );
+
         double getInput() { return inputValue; }
         double getSetPoint() { return setPoint; }
         double getOutput() { return outputValue; }
-        double getError() { return setPoint - inputValue; }
+    
+        double getError() { return error; }
+
+        double getP() { return P; }
+        double getI() { return I; }
+        double getD() { return D; }
+
         PidCalibration& getPidCalibration() { return calibration; }
 
         void setOutputLimits( double min, double max) {
-            pid.SetOutputLimits(min,max);
+            outputMin = min;
+            outputMax = max;
         }
+
         void setSetPoint( double setPoint ) { this->setPoint = setPoint; }
         void setPidCalibration( const PidCalibration& calibration );
 
 
-        PidController( Sensor& input, ControlledDevice& output );
+        
 
         void process();
         void start( double setPoint );

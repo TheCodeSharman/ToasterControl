@@ -1,39 +1,56 @@
 #include "PidController.h"
+#include <functional>
 
-PidController::PidController( Sensor& input, ControlledDevice& output )
-        : input( input ), output( output), 
-          pid(&inputValue,&outputValue,&setPoint, 0, 0, 0, P_ON_E, DIRECT )
-          {
+PidController::PidController( Sensor& input, ControlledDevice& output, MultiTask& tasks )
+        : input( input ), output( output), tasks(tasks) {
     PidCalibration defaultCal;
     setPidCalibration(defaultCal);
+    resetParameters();
+}
+
+void PidController::resetParameters() {
+    outputValue = 0;
+    I = 0;
+    P = 0;
+    D = 0;
+    error = 0;
+    lastError = 0;
 }
 
 void PidController::process() {
-    // still read input value even if we are disabled for monitoring purposes
+    
     inputValue = input.readSensor();
-    if ( pid.Compute() ) {
-        output.setValue(outputValue);
-    }
+    error = setPoint - inputValue;
+
+    P = calibration.Kp * error;
+    I = I + calibration.Ki * error;
+    D = calibration.Kd * (error - lastError);
+    lastError = error;
+
+    outputValue = P + I + D;
+    if ( outputValue > outputMax ) outputValue = outputMax;
+    if ( outputValue < outputMin ) outputValue = outputMin; 
+    output.setValue(outputValue);
 }
 
 void PidController::setPidCalibration( const PidCalibration& calibration ) {
     this->calibration = calibration;        
-    pid.SetTunings(
-        calibration.Kp,
-        calibration.Ki,
-        calibration.Kd,
-        calibration.P_MODE
-    );
 }
 
 void PidController::start( double setPoint ) {
     setSetPoint(setPoint);
-    pid.SetMode(AUTOMATIC);
+    if ( processLoop == NULL ) {
+        processLoop = tasks.every(10,std::bind(&PidController::process,this));
+    } else {
+        processLoop->setPeriod(10);
+    }
 }
 
 void PidController::stop() {
-    pid.SetMode(MANUAL);
+    if ( processLoop != NULL ) {
+        processLoop->setPeriod(0); 
+    }
     setSetPoint(0);
-    outputValue = 0;
+    resetParameters();
     output.setValue(outputValue);
 }

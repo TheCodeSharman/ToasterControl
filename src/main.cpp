@@ -9,23 +9,20 @@ const uint8_t LED_PIN = PC13;
 const uint8_t K_PROBE_PIN = A2;
 const uint8_t HEATER_PIN = PA15;
 
+MultiTask tasks;
+
 KTypeProbe probe(K_PROBE_PIN);
 OvenChamber ovenChamber(HEATER_PIN);
-PidController oven( probe,ovenChamber);
+PidController oven(probe,ovenChamber,tasks);
 Settings settings(Serial,probe,oven);
 
-MultiTask tasks;
+
 CommandProcessor command(Serial,oven,probe,settings,tasks);
 
 void blinkLed() {
   static bool isLedOn = false;
   digitalWrite(LED_PIN, (isLedOn?HIGH:LOW));
   isLedOn = !isLedOn;
-}
-
-void processPidControllers() {
-  oven.process();
-  
 }
 
 void setup() {
@@ -40,7 +37,6 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);  
   digitalWrite(LED_PIN, LOW);
   tasks.every(500,blinkLed);
-  tasks.every(10,processPidControllers);
   command.init();
 }
 

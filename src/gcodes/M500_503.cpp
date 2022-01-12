@@ -30,8 +30,8 @@ void M500_503::execute() {
     PidCalibration& pidCal = settings.getPidCalibration();
     KProbeCalibration& probeCal = settings.getProbeCalibration();
     output.printf("// Toaster oven settings:\r\n");
-    output.printf("//   PidController: Kp = %0.2f Ki = %0.2f Kd = %0.2f p_on = %i\r\n", 
-        pidCal.Kp, pidCal.Ki, pidCal.Kd, pidCal.P_MODE);
+    output.printf("//   PidController: Kp = %0.2f Ki = %0.2f Kd = %0.2f\r\n", 
+        pidCal.Kp, pidCal.Ki, pidCal.Kd);
     output.printf("//   KTypeProbe: A: (temp:%0.2f, adc:%i) B: (temp:%0.2f, adc:%i)\r\n",
         probeCal.tempOffsetA, probeCal.adcA,
         probeCal.tempOffsetB, probeCal.adcB);
