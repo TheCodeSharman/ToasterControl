@@ -31,11 +31,17 @@ void M105_M155::execute() {
 }
 
 void M105_M155::reportTemperatures() {
- output.printf("T: %0.2f (%0.0f) ; coldJunction = %0.2f adc = %i output = %0.2f error = %0.2f\r\n", 
+ output.printf("T: %0.2f (%0.0f) ; coldJunction = %0.2f adc = %i output = %0.2f error = %0.2f Kp=%0.2f Ki=%0.2f Kd=%0.2f mode=%i\r\n", 
         oven.getInput(), 
         oven.getSetPoint(),
         probe.getColdJunction()/1000.0,
         probe.getProbeAdc(),
         oven.getOutput(),
-        oven.getError());
+        oven.getError(),
+        oven.getPidCalibration().Kp,
+        oven.getPidCalibration().Ki,
+        oven.getPidCalibration().Kd,
+        oven.getPidCalibration().P_MODE
+
+ );
 }

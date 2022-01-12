@@ -35,4 +35,5 @@ void PidController::stop() {
     pid.SetMode(MANUAL);
     setSetPoint(0);
     outputValue = 0;
+    output.setValue(outputValue);
 }
