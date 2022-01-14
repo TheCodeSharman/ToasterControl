@@ -6,7 +6,7 @@ PidController::PidController( Sensor& input, ControlledDevice& output, MultiTask
         : input( input ), output( output), tasks(tasks) {
     PidCalibration defaultCal;
     setPidCalibration(defaultCal);
-    resetParameters();
+    
 }
 
 void PidController::resetParameters() {
@@ -51,11 +51,13 @@ void PidController::setPidCalibration( const PidCalibration& calibration ) {
 }
 
 void PidController::start( double setPoint ) {
+    resetParameters();
     setSetPoint(setPoint);
+    
     if ( processLoop == NULL ) {
-        processLoop = tasks.every(1000,std::bind(&PidController::process,this));
+        processLoop = tasks.every(samplePeriod,std::bind(&PidController::process,this));
     } else {
-        processLoop->setPeriod(10);
+        processLoop->setPeriod(samplePeriod);
     }
 }
 

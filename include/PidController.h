@@ -49,7 +49,8 @@ class PidController {
         double error;
         double lastError;
 
-        int averageSlopeN = 100;
+        int samplePeriod = 10;   // ms
+        int averageSlopeN = 3;
         std::deque<double> slopes;
         double slope;
 
@@ -71,7 +72,13 @@ class PidController {
         double getI() { return I; }
         double getD() { return D; }
 
+        int getSamplePeriod() { return samplePeriod; }
+        int getSlopeAverages() { return averageSlopeN; }
+
         PidCalibration& getPidCalibration() { return calibration; }
+
+        void setSamplePeriod( int ms ) { samplePeriod = ms; }
+        void setSlopeAverages( int n ) { averageSlopeN = n; }
 
         void setOutputLimits( double min, double max) {
             outputMin = min;
