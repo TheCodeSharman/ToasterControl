@@ -1,4 +1,5 @@
 #include "PidController.h"
+
 #include <functional>
 
 PidController::PidController( Sensor& input, ControlledDevice& output, MultiTask& tasks )
@@ -15,10 +16,8 @@ void PidController::resetParameters() {
     D = 0;
     error = 0;
     lastError = 0;
-    slopePtr = 0;
-    for( auto &s : slopes ) {
-        s = 0.0;
-    }
+    slopes.clear();
+    slopes.resize(averageSlopeN);
     slope = 0;
 }
 
@@ -27,20 +26,18 @@ void PidController::process() {
     inputValue = input.readSensor();
     error = setPoint - inputValue;
 
-    // use the mean of the last 10 
+    // use the mean of the last slopes 
     slope = 0.0;
     for( auto &s : slopes )
       slope += s;
-    slope = slope / 10;
+    slope = slope / slopes.size();
     
-
     P = calibration.Kp * error;
     I = I + calibration.Ki * error;
     D = calibration.Kd * slope;
 
-    slopePtr ++;
-    slopePtr = slopePtr%10;
-    slopes[slopePtr] = error - lastError;
+    slopes.pop_front();
+    slopes.push_back( error - lastError );
     lastError = error;
 
     outputValue = P + I + D;

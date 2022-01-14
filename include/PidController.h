@@ -1,6 +1,8 @@
 #ifndef PID_CONTROLLER_H
 #define PID_CONTROLLER_H
 
+#include <deque>
+
 #include "Sensor.h"
 #include "ControlledDevice.h"
 #include "MultiTask.h"
@@ -46,8 +48,9 @@ class PidController {
 
         double error;
         double lastError;
-        double slopes[10];
-        int slopePtr = 0;
+
+        int averageSlopeN = 100;
+        std::deque<double> slopes;
         double slope;
 
         MultiTask::CallbackFunction *processLoop;
