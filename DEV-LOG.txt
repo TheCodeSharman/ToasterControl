@@ -166,7 +166,7 @@ Since this is a once off prototype I haven't fixed the model.
     turns out to be tricky because the reading varies from 100 to 187, I assume because
     the highly reflective metal in the toaster oven confuses the measurement.
 
-  - I tried putting a blcak plastic filament spool (empty) and measuring that but it was
+  - I tried putting a black plastic filament spool (empty) and measuring that but it was
     seemed still unreliable. I recalibrated the second set point to this value anyway. 
 
   - Instead I put a green ceramic cup in the oven in order to wait for it to achieve thermal
@@ -175,4 +175,10 @@ Since this is a once off prototype I haven't fixed the model.
 
   - Turns out that the cup measured about 99 degrees when the oven was set to 100 so
     I'm leaving the calibration as is and seeing if it still works at the 60 degrees
-    set point !! (Maybe my black plastic was as unrelialbe as I thought)
+    set point !! (Maybe my black plastic wasn't as unreliable as I thought)
+
+  - At 60 the degree set point the cup measured 62 degrees (but spot on 60 if taken out of oven)
+    so this looks OK. Would be to nice to graph a contact thermometer over time and compare 
+    to get an accurate picture but +-2 degrees seems good enough for now.
+
+  
