@@ -148,12 +148,13 @@ Since this is a once off prototype I haven't fixed the model.
 
   10/07/2024 
 
-  - Accidentally blew up SSR by shorting the mains across the terminals. turns out I had wired
-  the switch incorrect. Pulled part the other side of the oven, and realise its not wired the
-  way I imagined: instead every element is wired together. So by supply power across different
-  elements they interact in an odd way. I wired the switch to permanent put power across all
-  of the elements so they contribute to the heating. Only the bottom two go red, but the top
-  ones are heating too. As ong as the elements work I'm not too fussed.
+  - Accidentally blew up SSR by shorting the mains across the terminals. Turns out I had 
+  wired the switch incorrectly. Pulled part the other side of the oven, and realised its 
+  not wired the way I imagined: instead the hidden side of every element was wired together! 
+  
+  I wired the switch to permanent put power across all of the elements so they contribute 
+  to the heating. Only the bottom two go red, but the top ones are heating too. As long as 
+  the elements work I'm not too fussed.
 
   - Ordered new SSR along with a proper steel covered K-Type prove and a dedicated i2c board
     to do a proper cold end and measurement. The intention was to upgrade to higher precision.
@@ -161,11 +162,11 @@ Since this is a once off prototype I haven't fixed the model.
   - But first I wanted to see if the current design is "good enough" to for things like
     drying filament and reflow soldering.
 
-  - I got an IR thermoter is the hope that this will amke it easier to calibrate but 
-    turns out to be tricky because the reading varie sfrom 100 to 187, I assume because
+  - I got an IR thermometer in the hope that this will amke it easier to calibrate but 
+    turns out to be tricky because the reading varies from 100 to 187, I assume because
     the highly reflective metal in the toaster oven confuses the measurement.
 
-  - I tried putting a blakc plastic filament spool (empty) and measuring that but it was
+  - I tried putting a blcak plastic filament spool (empty) and measuring that but it was
     seemed still unreliable. I recalibrated the second set point to this value anyway. 
 
   - Instead I put a green ceramic cup in the oven in order to wait for it to achieve thermal
