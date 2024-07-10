@@ -162,7 +162,7 @@ Since this is a once off prototype I haven't fixed the model.
   - But first I wanted to see if the current design is "good enough" to for things like
     drying filament and reflow soldering.
 
-  - I got an IR thermometer in the hope that this will amke it easier to calibrate but 
+  - I got an IR thermometer in the hope that this will make it easier to calibrate but 
     turns out to be tricky because the reading varies from 100 to 187, I assume because
     the highly reflective metal in the toaster oven confuses the measurement.
 
