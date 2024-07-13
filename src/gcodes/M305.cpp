@@ -2,7 +2,7 @@
 
 bool M305::match() {
     if ( GCode.HasWord('M') ) {
-       return ( (int)GCode.GetWordValue('M') == 306 );
+       return ( (int)GCode.GetWordValue('M') == 305 );
     }
     return false;
 }
