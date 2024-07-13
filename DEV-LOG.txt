@@ -181,4 +181,24 @@ Since this is a once off prototype I haven't fixed the model.
     so this looks OK. Would be to nice to graph a contact thermometer over time and compare 
     to get an accurate picture but +-2 degrees seems good enough for now.
 
-  
+  13/07/2024
+
+  Further testing: tryied to push to the 150 degrees but this casued some kind of dramatic change
+  the ADC reading - jumped back about 800 and this caused a thermal runaway like condition
+  (but the mechanical thermostat prevented the oven from overheating). 
+
+  Hypothesis: The connectiongs to the K-Type probe expanded due to increasing heat and this
+  caused increased resistance in the leads, whcih in turn reduced the measured voltage causing
+  the reported temoerateu to drop by about 100 degrees.
+
+  Other things I noticed that need to be fixed in the firmware:
+    - the derivative is very janky because there really isn't much precision on the temperature
+      reading, and this causes the D parameter to wildly fluctatue.
+    - fix: 
+       1. slow down the callback loop so there are bigger measures differences.
+       2. AND/OR keep a buffer of previous errors and calculate the derivative (maybe just average)
+
+  The P parameter can be wildly outside the output window and this means because of clipping any
+  contirbution die to I or D will be potentially be dwarfed. I wonder if the limits should be 
+  applied to P before added I and D?. Or alternatively the P,I,D should be better tuned and
+  have more impact?
