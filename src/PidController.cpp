@@ -1,6 +1,7 @@
 #include "PidController.h"
 
 #include <functional>
+#include <numeric>
 
 PidController::PidController( Sensor& input, ControlledDevice& output, MultiTask& tasks )
         : input( input ), output( output), tasks(tasks) {
@@ -14,31 +15,32 @@ void PidController::resetParameters() {
     I = 0;
     P = 0;
     D = 0;
-    error = 0;
     lastError = 0;
-    slopes.clear();
-    slopes.resize(averageSlopeN);
+    error = 0;
+
+    errors.clear();
+    errors.resize(averageN);
     slope = 0;
 }
 
 void PidController::process() {
     
     inputValue = input.readSensor();
-    error = setPoint - inputValue;
 
-    // use the mean of the last slopes 
-    slope = 0.0;
-    for( auto &s : slopes )
-      slope += s;
-    slope = slope / slopes.size();
-    
+    errors.push_back(setPoint - inputValue);
+    if ( errors.size() > averageN )
+        errors.pop_front();
+
+    // Average the sensor samples, this serves to filter out sensor noise
+    // and should create a smooth slope instead of being highly erratic
+    // due to quantisation of the ADC.
+    error = std::accumulate(errors.begin(), errors.end(), 0)/errors.size();
+    slope = error - lastError;
+    lastError = error;
+
     P = calibration.Kp * error;
     I = I + calibration.Ki * error;
     D = calibration.Kd * slope;
-
-    slopes.pop_front();
-    slopes.push_back( error - lastError );
-    lastError = error;
 
     outputValue = P + I + D;
     if ( outputValue > outputMax ) outputValue = outputMax;

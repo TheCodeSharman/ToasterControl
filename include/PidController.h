@@ -46,13 +46,13 @@ class PidController {
         double P;
         double D;
 
-        double error;
-        double lastError;
-
-        int samplePeriod = 10;   // ms
-        int averageSlopeN = 3;
-        std::deque<double> slopes;
+        int samplePeriod = 200;   // ms
+        int averageN = 10;
+        std::deque<double> errors;
         double slope;
+
+        double lastError;
+        double error;
 
         MultiTask::CallbackFunction *processLoop;
 
@@ -73,12 +73,12 @@ class PidController {
         double getD() { return D; }
 
         int getSamplePeriod() { return samplePeriod; }
-        int getSlopeAverages() { return averageSlopeN; }
+        int getAverages() { return averageN; }
 
         PidCalibration& getPidCalibration() { return calibration; }
 
         void setSamplePeriod( int ms ) { samplePeriod = ms; }
-        void setSlopeAverages( int n ) { averageSlopeN = n; }
+        void setAverages( int n ) { averageN = n; }
 
         void setOutputLimits( double min, double max) {
             outputMin = min;
