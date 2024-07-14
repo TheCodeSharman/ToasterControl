@@ -9,8 +9,8 @@
 
 typedef struct {
   float Kp = 2;
-  float Ki = 5;
-  float Kd = 1;
+  float Ki = 0.01;
+  float Kd = 0.2;
 } PidCalibration;
 
 /*  PID Controller:
