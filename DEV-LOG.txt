@@ -202,3 +202,46 @@ Since this is a once off prototype I haven't fixed the model.
   contirbution die to I or D will be potentially be dwarfed. I wonder if the limits should be 
   applied to P before added I and D?. Or alternatively the P,I,D should be better tuned and
   have more impact?
+
+  15/07/2024
+
+  Well it looks like the prototype board has stopped functioning - or possbily my K Type probe
+  has broken too (I can't get a millivolts measurement via the multimeter and tempreature doesn't work - 
+  but I lost the adapter from the probe plug to bannana plugs, put I think this is straight through anyhow)
+  
+  The board now has wildly varying ADC measruements. Touching a finger on the gain resistor makes this
+  even more wild. Not sure what has changed. 
+
+  Reverse engineered the schematics to see how everything is being wired up.
+
+  Couple of things to notice:
+    - The INA126 is powered by 5V but the Vref on STM32 is set to 3.3V by the dev board.
+    - There is a voltage divider to set Ref on INA126 to 1.65V but this uses 1k8 resistors and might be too high impedance?
+    - Bizairely the probe inputs are connected to Ref instead of ground via a 2M resister!! Datasheet says 10k.
+    - Looks like Ref is connected to the STM32 pin PA1 - but we're not configuring that pin!
+    - Could be shorted from Vo to Re?
+    - There are no decoupling caps for the INA126
+
+  Things to fix:
+    1. Ensure gain is appropriately set as to not go over 3.3V on Vo so that we're less than Vref.
+    2. Remove the 2M resister and replace it with a 10k from the probes to the proper ground! This should remove a source 
+       of noise that might be contributing to the instability.
+    3. Remove connection to pin PA1 in case this is a factor (should remove possible short here too.)
+    4. Use an opamp to buffer the Ref pin as described in the INA126 datasheet - this might make the circuit more reliable.
+    5. Add 1uF caps to INA126
+    6. Maybe remove caps onthe probe since they aren't specified in the datasheet, they might be unnecessary.
+    7. Get a new K Type probe for debugging to eliminate the potential of broken probe (need bannna plug to probe adapter too 
+       since I've lost that)
+
+  Also: need a solution to attach new steel encased probe securely. I'm thinking replacing the screw terminal with some 
+  bolts and washers should be adequate. Hopefullly the brand new probe will be working if we can fix the board.
+
+  Later on: I was able to fix the K type probe contacts by opening the plug and untwisting the wires
+  this seems to have restore functionality to the device but yeah probably worth upgrading to the proper
+  K type probe board I bought - this communicates over i2c and has built in cold junction compensation.
+
+  I might still give the existing board a go with lower temperatures - but if the cold junction heats up
+  too much I think it will be really off so for reliability it needs the upgrade.
+
+  
+  
