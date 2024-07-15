@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "TheCodeSharman")(type "KiCad")(uri "${KIPRJMOD}/TheCodeSharman.kicad_sym")(options "")(descr ""))
+)
