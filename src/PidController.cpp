@@ -34,7 +34,7 @@ void PidController::process() {
     // Average the sensor samples, this serves to filter out sensor noise
     // and should create a smooth slope instead of being highly erratic
     // due to quantisation of the ADC.
-    error = std::accumulate(errors.begin(), errors.end(), 0)/errors.size();
+    error = std::accumulate(errors.begin(), errors.end(), 0.0)/errors.size();
     slope = error - lastError;
     lastError = error;
 
