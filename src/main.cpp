@@ -33,8 +33,8 @@ void setup() {
   probe.setup();
   ovenChamber.setup();
   oven.setOutputLimits(0,ovenChamber.getWindowSize());
-  oven.setSamplePeriod(200);
-  oven.setAverages(3);
+  oven.setSamplePeriod(1000);
+  oven.setAverages(10);
 
   pinMode(LED_PIN, OUTPUT);  
   digitalWrite(LED_PIN, LOW);
