@@ -49,7 +49,9 @@ void PidController::process() {
 }
 
 void PidController::setPidCalibration( const PidCalibration& calibration ) {
-    this->calibration = calibration;        
+    this->calibration = calibration;  
+    I = 0; // zero the accumulated I so that a large incorrect I
+           // value won't delay testing thew new value.
 }
 
 void PidController::start( double setPoint ) {
