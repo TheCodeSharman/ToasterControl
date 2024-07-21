@@ -280,5 +280,7 @@ Since this is a once off prototype I haven't fixed the model.
   its dropping over time so it's certainly not perfect but I don't mind if its +- a few degrees especially in the 
   colder direction.
 
+About a hour later the cold junction is 32.19 and the meat thermometer reading is 59.8 degrees! Looks like its behaving
+extremely accurately - although this is just one temperature set point (60 degrees) it looks really promising!
 
   
