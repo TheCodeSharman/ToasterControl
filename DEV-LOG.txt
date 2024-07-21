@@ -243,5 +243,42 @@ Since this is a once off prototype I haven't fixed the model.
   I might still give the existing board a go with lower temperatures - but if the cold junction heats up
   too much I think it will be really off so for reliability it needs the upgrade.
 
-  
+  21/07/2024
+
+  I changed the resiter out for 10k pull down resister pulling doen to ground, turns out it was correctly wired before:
+  the resistors needs to pull down the reference voltage to ground. Fixed this.
+
+  Tried attaching the steel encased probe but this has an unexpected problem: because the metal case ends up being grounded
+  this prevents the circuit from working because the USB power supply is tied also to ground, which means that this
+  does the same thing as tied the problem to 0V. 
+
+  This is not easy to fix - we problably need to isolated the probe or build a power supply that has +3.3V and -3.3V voltages
+  so that ground is earth, and the steel cased probe will remained grounded for safety but the DC circuit needs to be isolated
+  from the mains ground so that means making sure that power doesn't come from the USB C connection.
+
+  Not sure how to that with Balckpill board I'm using.
+
+  Given the extent of the redesign needed it makes a lot more sense just use the K-Type probe breakout board I have, and
+  connect it to the I2C bus.
+
+  But getting ahead of myself - we can revert back to the old material sheathed probe for testing the new smoothed slope
+  PID code.
+
+  Manual calibration of PID parameters successful!! Kp=80.0 Ki = 0.01 Kd = 1500.0
+
+  And the temperature calibration is A: 4.82, 2090; B: 35.74, adc: 2254
+
+  These succeeded in having no overshoot and keeping a set point of 60 degrees steadily.
+
+  Moreover, the next day after the oven had cooled down to 12 degrees with cold junction at 21 degress, the temperature
+  was still rose to 60 degrees as measured by the independent calibration thermometer I was using (the insides of a BBQ meat 
+  thermometer)
+
+  This is excellent because it means the cold junction temperature compensation is actually much better than I though!
+
+  As I write this the meat thermometer has dropped to 58.8 degrees and the cold junction has risen to 28.44 degrees so
+  its dropping over time so it's certainly not perfect but I don't mind if its +- a few degrees especially in the 
+  colder direction.
+
+
   
