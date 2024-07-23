@@ -248,6 +248,13 @@ Since this is a once off prototype I haven't fixed the model.
   I changed the resiter out for 10k pull down resister pulling doen to ground, turns out it was correctly wired before:
   the resistors needs to pull down the reference voltage to ground. Fixed this.
 
+  I also cut out a slot in the case in order to plu the probe in - instead of relying on a friction fit I'm 
+  scewing in seecurely the pins of the probe to make sure during themal expansion the contacts are still secure.
+
+  This seems to fix the issue where as the temperature rises the ADC values were changing unreliably - it wasn't
+  the cold junction compensation, this seems fiarly linear, rather it was a bad connection increasing the 
+  resistence as the cold junction heats up.
+
   Tried attaching the steel encased probe but this has an unexpected problem: because the metal case ends up being grounded
   this prevents the circuit from working because the USB power supply is tied also to ground, which means that this
   does the same thing as tied the problem to 0V. 
